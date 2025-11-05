@@ -6,154 +6,214 @@
   <title>Security Monitor Agent</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      transition: background 0.3s, color 0.3s;
-    }
-    :root {
-      --bg: #f4f5fa;
-      --text: #222;
-      --card: #fff;
-      --primary: #2979ff;
-    }
-    [data-theme="dark"] {
-      --bg: #181b20;
-      --text: #eee;
-      --card: #23262c;
-      --primary: #90caf9;
-    }
-    .container {
-      display: flex;
-      min-height: 100vh;
-    }
-    .sidebar {
-      width: 220px;
-      background: var(--card);
-      box-shadow: 2px 0 6px rgba(0,0,0,0.07);
-      display: flex;
-      flex-direction: column;
-      padding: 3rem 1rem 1rem 1rem;
-    }
-    .sidebar button {
-      background: none;
-      border: none;
-      color: var(--text);
-      padding: 1rem;
-      margin-bottom: 0.5rem;
-      text-align: left;
-      font-size: 1rem;
-      font-weight: 500;
-      border-radius: 8px;
-      transition: background 0.2s, color 0.2s;
-      cursor: pointer;
-    }
-    .sidebar button.active {
-      background: var(--primary);
-      color: #fff;
-      font-weight: 700;
-    }
-    .main-content {
-      flex: 1;
-      padding: 3rem 2rem;
-      background: var(--bg);
-      transition: background 0.3s, color 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    .section {
-      display: none;
-      opacity: 0;
-      transform: translateY(25px);
-      transition: opacity 0.4s, transform 0.4s;
-      position: absolute;
-      width: 100%;
-      top: 0;
-      left: 0;
-    }
-    .section.active {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-      position: relative;
-    }
-    header {
-      background: var(--primary);
-      color: #fff;
-      padding: 1rem;
-      font-size: 1.2rem;
-      font-weight: 700;
-      text-align: center;
-    }
+    body { font-family: 'Roboto', sans-serif; margin: 0; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
+    :root { --bg: #f4f5fa; --text: #222; --card: #fff; --primary: #2979ff; }
+    [data-theme="dark"] { --bg: #181b20; --text: #eee; --card: #23262c; --primary: #90caf9; }
+    .container { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: var(--card); box-shadow: 2px 0 6px rgba(0,0,0,0.07); display: flex; flex-direction: column; padding: 3rem 1rem 1rem 1rem; }
+    .sidebar button { background: none; border: none; color: var(--text); padding: 1rem; margin-bottom: 0.5rem; text-align: left; font-size: 1rem; font-weight: 500; border-radius: 8px; transition: background 0.2s, color 0.2s; cursor: pointer; }
+    .sidebar button.active { background: var(--primary); color: #fff; font-weight: 700; }
+    .main-content { flex: 1; padding: 3rem 2rem; background: var(--bg); transition: background 0.3s, color 0.3s; position: relative; overflow: hidden; }
+    .section { display: none; opacity: 0; transform: translateY(25px); transition: opacity 0.4s, transform 0.4s; position: absolute; width: 100%; top: 0; left: 0; }
+    .section.active { display: block; opacity: 1; transform: translateY(0); position: relative; }
+    header { background: var(--primary); color: #fff; padding: 1rem; font-size: 1.2rem; font-weight: 700; text-align: center; }
+    /* --- Custom Section Styles --- */
+    .zones-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem; }
+    .zone-card { background: var(--card); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 1rem 1.2rem 1.6rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; }
+    .zone-title { font-weight: 700; margin-bottom: 0.5rem; }
+    .zone-status { margin-bottom: 0.7rem; font-size: 1rem; }
+    .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+    .on { background: #43e43c; }
+    .off { background: #eee; border: 1px solid #bbb; }
+    .zone-actions button { padding: 0.3rem 1rem; border-radius: 5px; border: none; margin-right: 0.6rem; background: var(--primary); color: #fff; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+    .zone-actions button:last-child { background: #999; }
+
+    .alerts-list { margin-top: 2rem; display: grid; gap: 1.2rem; }
+    .alert-card { border-radius: 10px; background: #fffdfd; border: 1.5px solid #e45c5c; box-shadow: 0 2px 8px rgba(255,0,0,0.03); padding: 1rem 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+    .alert-details { }
+    .alert-type { font-weight: 700; color: #e45c5c; }
+    .alert-meta { font-size: 0.97rem; opacity: 0.77; margin: 0.3rem 0; }
+    .alert-severity { font-weight: 500; }
+    .alert-clear { background: #e45c5c; color: #fff; border: none; border-radius: 4px; font-size: 0.95rem; padding: 0.45rem 1.1rem; cursor: pointer; }
+    .no-alerts { margin-top: 2rem; font-size: 1.08rem; color: #888; font-style: italic; }
+
+    .contacts-form { margin-top: 2rem; display: grid; gap: 1.4rem; max-width: 420px; }
+    .contacts-form label { font-weight: 500; margin-bottom: 0.2rem; display: block; }
+    .contacts-form input { width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #bbb; font-size: 1rem; margin-bottom: 0.3rem; }
+    .contacts-form button { background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 0.65rem; font-size: 1.07rem; font-weight: 700; cursor: pointer; margin-top: 0.7rem; }
+
+    .emergency-buttons { margin-top: 2rem; display: flex; gap: 2.2rem; }
+    .emg-btn { flex: 1; background: #e45c5c; color: #fff; font-size: 1.35rem; font-weight: 700; border: none; border-radius: 12px; padding: 2.2rem 0; cursor: pointer; box-shadow: 0 2px 10px rgba(255,0,0,0.07); transition: background 0.22s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .emg-btn.fire { background: #fd7300; }
+    .emg-btn.ambu { background: #61c8ea; }
+    .emg-btn svg { margin-bottom: 9px; }
+    
+    .history-table { margin-top: 2rem; width: 90%; border-collapse: collapse; background: #fff; border-radius: 6px; overflow: hidden; font-size: 1rem; }
+    .history-table th, .history-table td { padding: 0.9rem 1.2rem; text-align: left; }
+    .history-table th { background: #eef4ff; color: #444; font-weight: 700; }
+    .history-table tbody tr:nth-child(even) { background: #f8fafc; }
+    .history-table tbody tr:last-child td { border-bottom: none; }
+    .history-table td { border-bottom: 1px solid #f0f0f0; }
+
+    .cams-grid { margin-top: 2rem; display: grid; grid-template-columns: repeat(2,1fr); gap: 1.6rem; }
+    .cam-feed { background: #272e37; border-radius: 10px; display: flex; flex-direction: column; align-items: center; padding: 1.3rem 1.4rem 1rem 1.4rem; color: #fff; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.09); }
+    .cam-title { font-size: 1.12rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .cam-status { font-size: 0.92rem; opacity: 0.72; margin-bottom: 0.4rem; }
+    .cam-placeholder { width: 140px; height: 80px; background: #181b20; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #aaa; margin-bottom: 0.6rem; }
+    
+    .settings-block { margin-top: 2rem; background: var(--card); padding: 1.3rem 1.7rem; border-radius: 10px; max-width: 500px; }
+    .toggle-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.7rem; }
+    .toggle-group label { font-weight: 500; }
+    .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #bbb; transition: 0.2s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px; background: #fff; transition: .2s; border-radius: 50%; }
+    input:checked + .slider { background: var(--primary); }
+    input:checked + .slider:before { transform: translateX(22px); }
+    .settings-option { margin-bottom: 1.2rem; }
+    .notif-switch {margin-left: .5rem;}
   </style>
 </head>
 <body>
-<header>Security Monitor Agent</header>
-<div class="container">
-  <nav class="sidebar">
-    <button id="btn-zones" class="active" onclick="showSection('zones')">Monitoring Zones</button>
-    <button id="btn-alerts" onclick="showSection('alerts')">Threat Alerts</button>
-    <button id="btn-contacts" onclick="showSection('contacts')">Emergency Contacts</button>
-    <button id="btn-emcall" onclick="showSection('emcall')">Emergency Call</button>
-    <button id="btn-history" onclick="showSection('history')">Alert History</button>
-    <button id="btn-cam" onclick="showSection('cam')">Camera Feeds</button>
-    <button id="btn-settings" onclick="showSection('settings')">Settings</button>
-  </nav>
-  <main class="main-content">
-    <section id="section-zones" class="section active">
-      <!-- Existing Zones functionality goes here -->
-      <h2>Monitoring Zones</h2>
-      <div id="zones-content"></div>
-    </section>
-    <section id="section-alerts" class="section">
-      <!-- Existing Threat Alerts functionality goes here -->
-      <h2>Threat Alerts</h2>
-      <div id="alerts-content"></div>
-    </section>
-    <section id="section-contacts" class="section">
-      <!-- Existing Emergency Contacts functionality goes here -->
-      <h2>Emergency Contacts</h2>
-      <div id="contacts-content"></div>
-    </section>
-    <section id="section-emcall" class="section">
-      <!-- Existing Emergency Call functionality goes here -->
-      <h2>Emergency Call</h2>
-      <div id="emcall-content"></div>
-    </section>
-    <section id="section-history" class="section">
-      <!-- Existing Alert History functionality goes here -->
-      <h2>Alert History</h2>
-      <div id="history-content"></div>
-    </section>
-    <section id="section-cam" class="section">
-      <!-- Existing Camera Feeds functionality goes here -->
-      <h2>Camera Feeds</h2>
-      <div id="cam-content"></div>
-    </section>
-    <section id="section-settings" class="section">
-      <!-- Existing Settings functionality goes here -->
-      <h2>Settings</h2>
-      <div id="settings-content"></div>
-    </section>
-  </main>
-</div>
-<script>
-function showSection(id) {
-  // Hide all sections
-  document.querySelectorAll('.section').forEach(sec => {
-    sec.classList.remove('active');
-  });
-  // Remove active class from all buttons
-  document.querySelectorAll('.sidebar button').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  // Show selected section
-  document.getElementById('section-' + id).classList.add('active');
-  // Highlight active button
-  document.getElementById('btn-' + id).classList.add('active');
-}
-</script>
-</body>
-</html>
+  <header>Security Monitor Agent</header>
+  <div class="container">
+    <nav class="sidebar">
+      <button class="active" id="btn-zones" onclick="showSection('zones')">Monitoring Zones</button>
+      <button id="btn-alerts" onclick="showSection('alerts')">Threat Alerts</button>
+      <button id="btn-contacts" onclick="showSection('contacts')">Emergency Contacts</button>
+      <button id="btn-emcall" onclick="showSection('emcall')">Emergency Call</button>
+      <button id="btn-history" onclick="showSection('history')">Alert History</button>
+      <button id="btn-cam" onclick="showSection('cam')">Camera Feeds</button>
+      <button id="btn-settings" onclick="showSection('settings')">Settings</button>
+    </nav>
+    <main class="main-content">
+      <!-- Zones Section -->
+      <section class="section active" id="section-zones">
+        <h2>Monitoring Zones</h2>
+        <div class="zones-grid">
+          <div class="zone-card">
+            <span class="zone-title">Entrance</span>
+            <div class="zone-status"><span class="status-dot on"></span>Active</div>
+            <div class="zone-actions">
+              <button>Stop</button>
+              <button>Start</button>
+            </div>
+          </div>
+          <div class="zone-card">
+            <span class="zone-title">Parking</span>
+            <div class="zone-status"><span class="status-dot off"></span>Inactive</div>
+            <div class="zone-actions">
+              <button>Start</button>
+              <button>Stop</button>
+            </div>
+          </div>
+          <div class="zone-card">
+            <span class="zone-title">Shop Floor</span>
+            <div class="zone-status"><span class="status-dot on"></span>Active</div>
+            <div class="zone-actions">
+              <button>Stop</button>
+              <button>Start</button>
+            </div>
+          </div>
+          <div class="zone-card">
+            <span class="zone-title">Cash Counter</span>
+            <div class="zone-status"><span class="status-dot off"></span>Inactive</div>
+            <div class="zone-actions">
+              <button>Start</button>
+              <button>Stop</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Alerts Section -->
+      <section class="section" id="section-alerts">
+        <h2>Threat Alerts</h2>
+        <div class="alerts-list">
+          <div class="alert-card">
+            <div class="alert-details">
+              <span class="alert-type">Intrusion Detected</span>
+              <div class="alert-meta">15 seconds ago · Shop Floor</div>
+              <span class="alert-severity">Severity: High</span>
+            </div>
+            <button class="alert-clear">Clear</button>
+          </div>
+          <div class="alert-card">
+            <div class="alert-details">
+              <span class="alert-type">Fire Detected</span>
+              <div class="alert-meta">1 min ago · Cash Counter</div>
+              <span class="alert-severity">Severity: Critical</span>
+            </div>
+            <button class="alert-clear">Clear</button>
+          </div>
+          <div class="alert-card">
+            <div class="alert-details">
+              <span class="alert-type">Unauthorized Access</span>
+              <div class="alert-meta">3 mins ago · Parking</div>
+              <span class="alert-severity">Severity: Medium</span>
+            </div>
+            <button class="alert-clear">Clear</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Emergency Contacts Section -->
+      <section class="section" id="section-contacts">
+        <h2>Emergency Contacts</h2>
+        <form class="contacts-form">
+          <div>
+            <label for="police-contact">Police Contact</label>
+            <input type="tel" id="police-contact" placeholder="Enter police phone number" />
+          </div>
+          <div>
+            <label for="ambulance-contact">Ambulance Contact</label>
+            <input type="tel" id="ambulance-contact" placeholder="Enter ambulance phone number" />
+          </div>
+          <div>
+            <label for="fire-contact">Fire Contact</label>
+            <input type="tel" id="fire-contact" placeholder="Enter fire phone number" />
+          </div>
+          <div>
+            <label for="owner-contact">Owner Contact</label>
+            <input type="tel" id="owner-contact" placeholder="Enter owner phone number" />
+          </div>
+          <button type="submit">Save Contacts</button>
+        </form>
+      </section>
+
+      <!-- Emergency Call Section -->
+      <section class="section" id="section-emcall">
+        <h2>Emergency Call</h2>
+        <div class="emergency-buttons">
+          <button class="emg-btn">
+            <svg height="36" width="36" fill="#fff"><circle cx="18" cy="18" r="15" stroke="#fff" stroke-width="3" fill="none"/><text x="50%" y="62%" font-size="15" fill="#fff" text-anchor="middle">🚔</text></svg>
+            Police
+          </button>
+          <button class="emg-btn ambu">
+            <svg height="36" width="36" fill="#fff"><circle cx="18" cy="18" r="15" stroke="#fff" stroke-width="3" fill="none"/><text x="50%" y="62%" font-size="15" fill="#fff" text-anchor="middle">🚑</text></svg>
+            Ambulance
+          </button>
+          <button class="emg-btn fire">
+            <svg height="36" width="36" fill="#fff"><circle cx="18" cy="18" r="15" stroke="#fff" stroke-width="3" fill="none"/><text x="50%" y="62%" font-size="15" fill="#fff" text-anchor="middle">🔥</text></svg>
+            Fire
+          </button>
+        </div>
+      </section>
+
+      <!-- Alert History Section -->
+      <section class="section" id="section-history">
+        <h2>Alert History</h2>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Type</th>
+              <th>Severity</th>
+              <th>Zone</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2025-11-05 19:45</td>
+              <td>Intrusion</
