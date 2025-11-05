@@ -2,3 +2,7 @@ flask
 flask-cors
 flask-socketio
 python-dotenv
+flask-login
+flask-bcrypt
+pyjwt
+flask-sqlalchemy
