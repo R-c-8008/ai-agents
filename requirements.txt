@@ -1,0 +1,6 @@
+pytest
+flake8
+black
+openai
+langchain
+python-dotenv
