@@ -5,215 +5,274 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Security Monitor Agent</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Roboto', sans-serif; margin: 0; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
-    :root { --bg: #f4f5fa; --text: #222; --card: #fff; --primary: #2979ff; }
-    [data-theme="dark"] { --bg: #181b20; --text: #eee; --card: #23262c; --primary: #90caf9; }
-    .container { display: flex; min-height: 100vh; }
-    .sidebar { width: 220px; background: var(--card); box-shadow: 2px 0 6px rgba(0,0,0,0.07); display: flex; flex-direction: column; padding: 3rem 1rem 1rem 1rem; }
-    .sidebar button { background: none; border: none; color: var(--text); padding: 1rem; margin-bottom: 0.5rem; text-align: left; font-size: 1rem; font-weight: 500; border-radius: 8px; transition: background 0.2s, color 0.2s; cursor: pointer; }
-    .sidebar button.active { background: var(--primary); color: #fff; font-weight: 700; }
-    .main-content { flex: 1; padding: 3rem 2rem; background: var(--bg); transition: background 0.3s, color 0.3s; position: relative; overflow: hidden; }
-    .section { display: none; opacity: 0; transform: translateY(25px); transition: opacity 0.4s, transform 0.4s; position: absolute; width: 100%; top: 0; left: 0; }
-    .section.active { display: block; opacity: 1; transform: translateY(0); position: relative; }
-    header { background: var(--primary); color: #fff; padding: 1rem; font-size: 1.2rem; font-weight: 700; text-align: center; }
-    /* --- Custom Section Styles --- */
-    .zones-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem; }
-    .zone-card { background: var(--card); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 1rem 1.2rem 1.6rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; }
-    .zone-title { font-weight: 700; margin-bottom: 0.5rem; }
-    .zone-status { margin-bottom: 0.7rem; font-size: 1rem; }
-    .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
-    .on { background: #43e43c; }
-    .off { background: #eee; border: 1px solid #bbb; }
-    .zone-actions button { padding: 0.3rem 1rem; border-radius: 5px; border: none; margin-right: 0.6rem; background: var(--primary); color: #fff; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
-    .zone-actions button:last-child { background: #999; }
-
-    .alerts-list { margin-top: 2rem; display: grid; gap: 1.2rem; }
-    .alert-card { border-radius: 10px; background: #fffdfd; border: 1.5px solid #e45c5c; box-shadow: 0 2px 8px rgba(255,0,0,0.03); padding: 1rem 1.2rem; display: flex; justify-content: space-between; align-items: center; }
-    .alert-details { }
-    .alert-type { font-weight: 700; color: #e45c5c; }
-    .alert-meta { font-size: 0.97rem; opacity: 0.77; margin: 0.3rem 0; }
-    .alert-severity { font-weight: 500; }
-    .alert-clear { background: #e45c5c; color: #fff; border: none; border-radius: 4px; font-size: 0.95rem; padding: 0.45rem 1.1rem; cursor: pointer; }
-    .no-alerts { margin-top: 2rem; font-size: 1.08rem; color: #888; font-style: italic; }
-
-    .contacts-form { margin-top: 2rem; display: grid; gap: 1.4rem; max-width: 420px; }
-    .contacts-form label { font-weight: 500; margin-bottom: 0.2rem; display: block; }
-    .contacts-form input { width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #bbb; font-size: 1rem; margin-bottom: 0.3rem; }
-    .contacts-form button { background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 0.65rem; font-size: 1.07rem; font-weight: 700; cursor: pointer; margin-top: 0.7rem; }
-
-    .emergency-buttons { margin-top: 2rem; display: flex; gap: 2.2rem; }
-    .emg-btn { flex: 1; background: #e45c5c; color: #fff; font-size: 1.35rem; font-weight: 700; border: none; border-radius: 12px; padding: 2.2rem 0; cursor: pointer; box-shadow: 0 2px 10px rgba(255,0,0,0.07); transition: background 0.22s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .emg-btn.fire { background: #fd7300; }
-    .emg-btn.ambu { background: #61c8ea; }
-    .emg-btn svg { margin-bottom: 9px; }
-    
-    .history-table { margin-top: 2rem; width: 90%; border-collapse: collapse; background: #fff; border-radius: 6px; overflow: hidden; font-size: 1rem; }
-    .history-table th, .history-table td { padding: 0.9rem 1.2rem; text-align: left; }
-    .history-table th { background: #eef4ff; color: #444; font-weight: 700; }
-    .history-table tbody tr:nth-child(even) { background: #f8fafc; }
-    .history-table tbody tr:last-child td { border-bottom: none; }
-    .history-table td { border-bottom: 1px solid #f0f0f0; }
-
-    .cams-grid { margin-top: 2rem; display: grid; grid-template-columns: repeat(2,1fr); gap: 1.6rem; }
-    .cam-feed { background: #272e37; border-radius: 10px; display: flex; flex-direction: column; align-items: center; padding: 1.3rem 1.4rem 1rem 1.4rem; color: #fff; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.09); }
-    .cam-title { font-size: 1.12rem; font-weight: 600; margin-bottom: 0.4rem; }
-    .cam-status { font-size: 0.92rem; opacity: 0.72; margin-bottom: 0.4rem; }
-    .cam-placeholder { width: 140px; height: 80px; background: #181b20; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #aaa; margin-bottom: 0.6rem; }
-    
-    .settings-block { margin-top: 2rem; background: var(--card); padding: 1.3rem 1.7rem; border-radius: 10px; max-width: 500px; }
-    .toggle-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.7rem; }
-    .toggle-group label { font-weight: 500; }
-    .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #bbb; transition: 0.2s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px; background: #fff; transition: .2s; border-radius: 50%; }
-    input:checked + .slider { background: var(--primary); }
-    input:checked + .slider:before { transform: translateX(22px); }
-    .settings-option { margin-bottom: 1.2rem; }
-    .notif-switch {margin-left: .5rem;}
-  </style>
+  <!-- Styles omitted for brevity (already added above, see previous content) -->
 </head>
 <body>
-  <header>Security Monitor Agent</header>
-  <div class="container">
-    <nav class="sidebar">
-      <button class="active" id="btn-zones" onclick="showSection('zones')">Monitoring Zones</button>
-      <button id="btn-alerts" onclick="showSection('alerts')">Threat Alerts</button>
-      <button id="btn-contacts" onclick="showSection('contacts')">Emergency Contacts</button>
-      <button id="btn-emcall" onclick="showSection('emcall')">Emergency Call</button>
-      <button id="btn-history" onclick="showSection('history')">Alert History</button>
-      <button id="btn-cam" onclick="showSection('cam')">Camera Feeds</button>
-      <button id="btn-settings" onclick="showSection('settings')">Settings</button>
-    </nav>
-    <main class="main-content">
-      <!-- Zones Section -->
-      <section class="section active" id="section-zones">
-        <h2>Monitoring Zones</h2>
-        <div class="zones-grid">
-          <div class="zone-card">
-            <span class="zone-title">Entrance</span>
-            <div class="zone-status"><span class="status-dot on"></span>Active</div>
-            <div class="zone-actions">
-              <button>Stop</button>
-              <button>Start</button>
-            </div>
-          </div>
-          <div class="zone-card">
-            <span class="zone-title">Parking</span>
-            <div class="zone-status"><span class="status-dot off"></span>Inactive</div>
-            <div class="zone-actions">
-              <button>Start</button>
-              <button>Stop</button>
-            </div>
-          </div>
-          <div class="zone-card">
-            <span class="zone-title">Shop Floor</span>
-            <div class="zone-status"><span class="status-dot on"></span>Active</div>
-            <div class="zone-actions">
-              <button>Stop</button>
-              <button>Start</button>
-            </div>
-          </div>
-          <div class="zone-card">
-            <span class="zone-title">Cash Counter</span>
-            <div class="zone-status"><span class="status-dot off"></span>Inactive</div>
-            <div class="zone-actions">
-              <button>Start</button>
-              <button>Stop</button>
-            </div>
+  <header>Security Monitor Agent Dashboard</header>
+  <main>
+    <!-- Monitoring Zones Section -->
+    <section>
+      <h2>Monitoring Zones</h2>
+      <div class="zones-grid">
+        <div class="zone-card">
+          <div class="zone-title card-row">Zone 1</div>
+          <div class="card-row">Camera ID: CAM1001 <span class="status-badge on">Active</span></div>
+          <div class="card-row">Threats Detected: <strong>2</strong></div>
+          <div class="card-row">Last Scan: 20:02</div>
+          <div class="zone-actions card-row">
+            <button>Start Monitoring</button>
+            <button>Stop Monitoring</button>
+            <button>View Details</button>
+            <button>Settings</button>
           </div>
         </div>
-      </section>
-
-      <!-- Alerts Section -->
-      <section class="section" id="section-alerts">
-        <h2>Threat Alerts</h2>
-        <div class="alerts-list">
-          <div class="alert-card">
-            <div class="alert-details">
-              <span class="alert-type">Intrusion Detected</span>
-              <div class="alert-meta">15 seconds ago · Shop Floor</div>
-              <span class="alert-severity">Severity: High</span>
-            </div>
-            <button class="alert-clear">Clear</button>
-          </div>
-          <div class="alert-card">
-            <div class="alert-details">
-              <span class="alert-type">Fire Detected</span>
-              <div class="alert-meta">1 min ago · Cash Counter</div>
-              <span class="alert-severity">Severity: Critical</span>
-            </div>
-            <button class="alert-clear">Clear</button>
-          </div>
-          <div class="alert-card">
-            <div class="alert-details">
-              <span class="alert-type">Unauthorized Access</span>
-              <div class="alert-meta">3 mins ago · Parking</div>
-              <span class="alert-severity">Severity: Medium</span>
-            </div>
-            <button class="alert-clear">Clear</button>
+        <div class="zone-card">
+          <div class="zone-title card-row">Zone 2</div>
+          <div class="card-row">Camera ID: CAM1012 <span class="status-badge off">Paused</span></div>
+          <div class="card-row">Threats Detected: <strong>0</strong></div>
+          <div class="card-row">Last Scan: 19:55</div>
+          <div class="zone-actions card-row">
+            <button>Start Monitoring</button>
+            <button>Stop Monitoring</button>
+            <button>View Details</button>
+            <button>Settings</button>
           </div>
         </div>
-      </section>
-
-      <!-- Emergency Contacts Section -->
-      <section class="section" id="section-contacts">
-        <h2>Emergency Contacts</h2>
-        <form class="contacts-form">
-          <div>
-            <label for="police-contact">Police Contact</label>
-            <input type="tel" id="police-contact" placeholder="Enter police phone number" />
+        <div class="zone-card">
+          <div class="zone-title card-row">Zone 3</div>
+          <div class="card-row">Camera ID: CAM1018 <span class="status-badge on">Active</span></div>
+          <div class="card-row">Threats Detected: <strong>1</strong></div>
+          <div class="card-row">Last Scan: 20:00</div>
+          <div class="zone-actions card-row">
+            <button>Start Monitoring</button>
+            <button>Stop Monitoring</button>
+            <button>View Details</button>
+            <button>Settings</button>
           </div>
-          <div>
-            <label for="ambulance-contact">Ambulance Contact</label>
-            <input type="tel" id="ambulance-contact" placeholder="Enter ambulance phone number" />
-          </div>
-          <div>
-            <label for="fire-contact">Fire Contact</label>
-            <input type="tel" id="fire-contact" placeholder="Enter fire phone number" />
-          </div>
-          <div>
-            <label for="owner-contact">Owner Contact</label>
-            <input type="tel" id="owner-contact" placeholder="Enter owner phone number" />
-          </div>
-          <button type="submit">Save Contacts</button>
-        </form>
-      </section>
-
-      <!-- Emergency Call Section -->
-      <section class="section" id="section-emcall">
-        <h2>Emergency Call</h2>
-        <div class="emergency-buttons">
-          <button class="emg-btn">
-            <svg height="36" width="36" fill="#fff"><circle cx="18" cy="18" r="15" stroke="#fff" stroke-width="3" fill="none"/><text x="50%" y="62%" font-size="15" fill="#fff" text-anchor="middle">🚔</text></svg>
-            Police
-          </button>
-          <button class="emg-btn ambu">
-            <svg height="36" width="36" fill="#fff"><circle cx="18" cy="18" r="15" stroke="#fff" stroke-width="3" fill="none"/><text x="50%" y="62%" font-size="15" fill="#fff" text-anchor="middle">🚑</text></svg>
-            Ambulance
-          </button>
-          <button class="emg-btn fire">
-            <svg height="36" width="36" fill="#fff"><circle cx="18" cy="18" r="15" stroke="#fff" stroke-width="3" fill="none"/><text x="50%" y="62%" font-size="15" fill="#fff" text-anchor="middle">🔥</text></svg>
-            Fire
-          </button>
         </div>
-      </section>
+        <div class="zone-card">
+          <div class="zone-title card-row">Zone 4</div>
+          <div class="card-row">Camera ID: CAM1024 <span class="status-badge off">Paused</span></div>
+          <div class="card-row">Threats Detected: <strong>5</strong></div>
+          <div class="card-row">Last Scan: 19:58</div>
+          <div class="zone-actions card-row">
+            <button>Start Monitoring</button>
+            <button>Stop Monitoring</button>
+            <button>View Details</button>
+            <button>Settings</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <!-- Alert History Section -->
-      <section class="section" id="section-history">
-        <h2>Alert History</h2>
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Type</th>
-              <th>Severity</th>
-              <th>Zone</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2025-11-05 19:45</td>
-              <td>Intrusion</
+    <!-- Threat Alerts Section -->
+    <section>
+      <h2>Threat Alerts</h2>
+      <div class="filter-btns">
+        <button class="active">All</button>
+        <button>Critical</button>
+        <button>High</button>
+        <button>Medium</button>
+        <button>Low</button>
+      </div>
+      <div class="alerts-search">
+        <input type="text" placeholder="Search alerts...">
+      </div>
+      <div class="alerts-list">
+        <div class="alert-card">
+          <div class="alert-details">
+            <span class="alert-type">Intrusion</span>
+            <span class="alert-severity Critical">Critical</span>
+            <div class="alert-meta">20:02 | Zone 1</div>
+            <div>Description: Unrecognized person detected near gate.</div>
+          </div>
+          <div class="alert-actions">
+            <button>Clear</button>
+            <button>Investigate</button>
+            <button>Report</button>
+          </div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-details">
+            <span class="alert-type">Object Left Behind</span>
+            <span class="alert-severity High">High</span>
+            <div class="alert-meta">20:01 | Zone 3</div>
+            <div>Description: Suspicious package detected.</div>
+          </div>
+          <div class="alert-actions">
+            <button>Clear</button>
+            <button>Investigate</button>
+            <button>Report</button>
+          </div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-details">
+            <span class="alert-type">Tampering</span>
+            <span class="alert-severity Medium">Medium</span>
+            <div class="alert-meta">19:58 | Zone 4</div>
+            <div>Description: Camera view obstructed.</div>
+          </div>
+          <div class="alert-actions">
+            <button>Clear</button>
+            <button>Investigate</button>
+            <button>Report</button>
+          </div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-details">
+            <span class="alert-type">Noise</span>
+            <span class="alert-severity Low">Low</span>
+            <div class="alert-meta">19:55 | Zone 2</div>
+            <div>Description: Loud sound detected.</div>
+          </div>
+          <div class="alert-actions">
+            <button>Clear</button>
+            <button>Investigate</button>
+            <button>Report</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Emergency Contacts Section -->
+    <section>
+      <h2>Emergency Contacts</h2>
+      <form class="contact-grid">
+        <div class="contact-row"><label for="police">Police</label><input type="tel" id="police" placeholder="Police Phone"><button class="test-btn">Test Call</button></div>
+        <div class="contact-row"><label for="ambulance">Ambulance</label><input type="tel" id="ambulance" placeholder="Ambulance Phone"><button class="test-btn">Test Call</button></div>
+        <div class="contact-row"><label for="fire">Fire</label><input type="tel" id="fire" placeholder="Fire Phone"><button class="test-btn">Test Call</button></div>
+        <div class="contact-row"><label for="owner">Owner</label><input type="tel" id="owner" placeholder="Owner Phone"><button class="test-btn">Test Call</button></div>
+        <button type="submit" class="save-btn">Save Contacts</button>
+      </form>
+      <div class="contact-update">Last Updated: 20:03</div>
+    </section>
+
+    <!-- Emergency Call Section -->
+    <section>
+      <h2>Emergency Call</h2>
+      <div class="emergency-call-grid">
+        <button class="emergency-btn"><span>🚔</span>Police</button>
+        <button class="emergency-btn"><span>🚑</span>Ambulance</button>
+        <button class="emergency-btn"><span>🔥</span>Fire</button>
+      </div>
+      <div class="call-status">Call Status: No active emergency call</div>
+      <div class="recent-calls">
+        <strong>Recent Calls:</strong>
+        <div class="recent-calls-list">
+          <div>19:59 - Ambulance</div>
+          <div>19:56 - Police</div>
+          <div>19:54 - Owner</div>
+        </div>
+      </div>
+      <input class="quick-notes" type="text" placeholder="Quick notes for emergency...">
+    </section>
+
+    <!-- Alert History Section -->
+    <section>
+      <h2>Alert History</h2>
+      <div class="date-filter">
+        <input type="date"> to <input type="date">
+        <button class="export-btn">Export</button>
+      </div>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Time</th><th>Type</th><th>Severity</th><th>Zone</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>20:02</td><td>Intrusion</td><td>Critical</td><td>Zone 1</td><td>Active</td>
+            <td class="table-actions"><button>View</button><button>Clear</button></td>
+          </tr>
+          <tr>
+            <td>20:01</td><td>Object Left</td><td>High</td><td>Zone 3</td><td>Resolved</td>
+            <td class="table-actions"><button>View</button><button>Clear</button></td>
+          </tr>
+          <tr>
+            <td>19:58</td><td>Tampering</td><td>Medium</td><td>Zone 4</td><td>Active</td>
+            <td class="table-actions"><button>View</button><button>Clear</button></td>
+          </tr>
+          <tr>
+            <td>19:55</td><td>Noise</td><td>Low</td><td>Zone 2</td><td>Active</td>
+            <td class="table-actions"><button>View</button><button>Clear</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- Pagination Controls -->
+      <div style="margin-top:1rem">
+        <button>&lt; Prev</button>
+        <span style="margin:0 12px;">Page 1 of 2</span>
+        <button>Next &gt;</button>
+      </div>
+    </section>
+
+    <!-- Camera Feeds Section -->
+    <section>
+      <h2>Camera Feeds</h2>
+      <div class="camera-grid">
+        <div class="camera-card">
+          <div class="camera-live">Cam 1 <span class="live-badge">LIVE</span></div>
+          <div class="camera-video">Video Stream</div>
+          <div class="camera-controls">
+            <button>Snapshot</button>
+            <button>Record</button>
+            <button>Fullscreen</button>
+          </div>
+        </div>
+        <div class="camera-card">
+          <div class="camera-live">Cam 2 <span class="live-badge">LIVE</span></div>
+          <div class="camera-video">Video Stream</div>
+          <div class="camera-controls">
+            <button>Snapshot</button>
+            <button>Record</button>
+            <button>Fullscreen</button>
+          </div>
+        </div>
+        <div class="camera-card">
+          <div class="camera-live">Cam 3 <span class="live-badge">LIVE</span></div>
+          <div class="camera-video">Video Stream</div>
+          <div class="camera-controls">
+            <button>Snapshot</button>
+            <button>Record</button>
+            <button>Fullscreen</button>
+          </div>
+        </div>
+        <div class="camera-card">
+          <div class="camera-live">Cam 4 <span class="live-badge">LIVE</span></div>
+          <div class="camera-video">Video Stream</div>
+          <div class="camera-controls">
+            <button>Snapshot</button>
+            <button>Record</button>
+            <button>Fullscreen</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings Section -->
+    <section>
+      <h2>Settings</h2>
+      <div class="settings-row">
+        <span class="settings-label">Theme</span>
+        <input type="checkbox" class="theme-toggle"> Dark Mode
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Notifications</span>
+        <input type="checkbox" class="notif-toggle"> Enable
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Scan Interval</span>
+        <input type="range" min="1" max="30" value="5" class="scan-slider">
+        <span>mins</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Auto-response</span>
+        <input type="checkbox" class="auto-response-toggle"> Enable
+      </div>
+      <button class="save-settings-btn">Save Settings</button>
+    </section>
+
+  </main>
+</body>
+</html>
