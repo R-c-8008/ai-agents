@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Monitor Agent</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛡️ Security Monitor</h1>
+            <div class="status-indicator" id="statusIndicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Checking...</span>
+            </div>
+        </header>
+
+        <section class="emergency-actions">
+            <h2>Emergency Actions</h2>
+            <div class="button-group">
+                <button class="emergency-btn police" id="callPolice">
+                    🚔 Call Police
+                </button>
+                <button class="emergency-btn ambulance" id="callAmbulance">
+                    🚑 Call Ambulance
+                </button>
+                <button class="emergency-btn fire" id="callFire">
+                    🚒 Fire Department
+                </button>
+            </div>
+        </section>
+
+        <section class="alerts-section">
+            <h2>Recent Alerts</h2>
+            <div id="alertsList" class="alerts-list">
+                <!-- Alerts will be populated by popup.js -->
+            </div>
+        </section>
+
+        <section class="actions">
+            <button class="action-btn" id="refreshBtn">
+                🔄 Refresh Status
+            </button>
+            <button class="action-btn" id="settingsBtn">
+                ⚙️ Settings
+            </button>
+        </section>
+
+        <footer>
+            <p>Last updated: <span id="lastUpdate">Never</span></p>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
