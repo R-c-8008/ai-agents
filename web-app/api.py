@@ -6,7 +6,6 @@ from datetime import datetime
 import json
 import os
 from functools import wraps
-
 # Import auth module
 from auth import authenticate_user, register_user, logout_user, is_authenticated
 
@@ -37,7 +36,6 @@ def login_required(f):
 
 def monitoring_worker():
     """Background worker for continuous monitoring"""
-    global monitoring_active, threat_log, status_data
     
     while monitoring_active:
         # Simulate threat detection (integrate with actual security monitor)
@@ -144,7 +142,7 @@ def auth_status():
 @login_required
 def start_monitoring():
     """Start the security monitoring"""
-    global monitoring_active, monitoring_thread, status_data
+    global monitoring_active, monitoring_thread
     
     if not monitoring_active:
         monitoring_active = True
@@ -159,7 +157,7 @@ def start_monitoring():
 @login_required
 def stop_monitoring():
     """Stop the security monitoring"""
-    global monitoring_active, status_data
+    global monitoring_active
     
     if monitoring_active:
         monitoring_active = False
@@ -184,8 +182,6 @@ def get_threats():
 @login_required
 def report_threat():
     """Report a new threat"""
-    global threat_log, status_data
-    
     data = request.get_json()
     threat = {
         'id': len(threat_log) + 1,
@@ -205,8 +201,6 @@ def report_threat():
 @login_required
 def send_alert():
     """Send security alert"""
-    global status_data
-    
     data = request.get_json()
     # Integrate with actual alert system (email, SMS, etc.)
     status_data['alerts_sent'] += 1
