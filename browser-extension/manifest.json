@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Security Monitor Agent",
+  "version": "1.0.0",
+  "description": "Real-time security monitoring and emergency alert system",
+  "permissions": [
+    "notifications",
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "http://localhost:5000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icon-128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "128": "icon-128.png"
+  }
+}
