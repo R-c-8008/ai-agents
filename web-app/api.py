@@ -218,4 +218,8 @@ def health_check():
     return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()}), 200
 
 if __name__ == '__main__':
+        # Initialize database on startup
+    from auth import init_db
+    init_db()
+    print('Database initialized successfully')
     app.run(debug=True, host='0.0.0.0', port=5000)
