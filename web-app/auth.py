@@ -400,6 +400,95 @@ def setup_auth_routes(app):
     app.teardown_appcontext(close_db)
 
 # Initialize database on module import
+
+               # ============================================================================
+# Compatibility wrapper functions for api.py
+# ============================================================================
+
+def authenticate_user(username, password):
+    """Wrapper for api.py compatibility - authenticates user with session-based auth.
+    
+    Args:
+        username: Username or email
+        password: Password
+    
+    Returns:
+        dict: {'success': bool, 'user_id': int, 'error': str}
+    """
+    # For session-based auth, we just validate credentials
+    # Session will be managed by Flask's session object in api.py
+    try:
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        cursor.execute(
+            'SELECT id, username, password_hash FROM users WHERE username = ? OR email = ?',
+            (username, username)
+        )
+        user = cursor.fetchone()
+        conn.close()
+        
+        if not user:
+            return {'success': False, 'error': 'Invalid credentials'}
+        
+        if not verify_password(password, user[2]):
+            return {'success': False, 'error': 'Invalid credentials'}
+        
+        return {'success': True, 'user_id': user[0], 'username': user[1]}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+def is_authenticated(session):
+    """Check if user is authenticated via Flask session.
+    
+    Args:
+        session: Flask session object
+    
+    Returns:
+        bool: True if authenticated, False otherwise
+    """
+    return session.get('authenticated', False) and 'user_id' in session
+
+# Note: The original register_user in auth.py has signature: register_user(username, email, password)
+# and returns (success: bool, message: str, user_id: int)
+# We need to wrap it to match api.py's expected signature and return format
+
+# Store original function with different name
+_original_register_user = register_user
+
+def register_user(username, password, email=''):
+    """Wrapper for api.py compatibility - Register a new user.
+    
+    Args:
+        username: Username
+        password: Password  
+        email: Email (optional)
+    
+    Returns:
+        dict: {'success': bool, 'error': str (if failed)}
+    """
+    # Call original with reordered parameters
+    success, message, user_id = _original_register_user(username, email, password)
+    
+    if success:
+        return {'success': True, 'user_id': user_id}
+    else:
+        return {'success': False, 'error': message}
+
+# Store original logout_user with different name  
+_original_logout_user = logout_user
+
+def logout_user(session):
+    """Wrapper for api.py compatibility - Logout user (session-based).
+    
+    For session-based auth, we don't need to do anything here.
+    The session.clear() in api.py handles the logout.
+    
+    Args:
+        session: Flask session object
+    """
+    # For session-based auth, just return success
+    # The actual session clearing is done in api.py
+    pass
 if __name__ == '__main__':
     init_db()
     print("Database initialized successfully")
