@@ -21,6 +21,12 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy web-app requirements file
+COPY web-app/requirements-web.txt ./web-app/
+
+# Install web application dependencies
+RUN pip install --no-cache-dir -r web-app/requirements-web.txt
+
 # Copy application code
 COPY . .
 
