@@ -10,7 +10,40 @@
   <input type="text" placeholder="Paste Cam MJPEG/JPEG URL..." style="padding:8px;width:220px;border-radius:4px;">
   <button onclick="connectZoneCam(this)">Show</button>
   <br>
+  <img style=<button onclick="openCamConnect(this)" style="margin-left:8px;margin-top:6px;background:#667eea;color:#fff;border-radius:6px;padding:7px 16px;border:none;font-weight:600;">Connect Camera</button>
+<div class="cam-connect-ui" style="display:none;margin-top:12px;">
+  <input type="text" placeholder="Paste Cam MJPEG/JPEG URL..." style="padding:8px;width:220px;border-radius:4px;">
+  <button onclick="connectZoneCam(this)">Show</button>
+  <br>
   <img style="margin-top:10px;border-radius:8px;max-width:100%;display:none;">
+</div>
+"margin-top:10px;border-radius:8px;max-width:100%;display:none;"></main>
+<script>
+function doLogin() {
+  var user = document.getElementById('login-username').value;
+  var pass = document.getElementById('login-password').value;
+  if (user && pass) {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('main-dashboard').style.display = '';
+    return false;
+  } else {
+    alert('Please enter both username and password.');
+    return false;
+  }
+}
+function openCamConnect(btn) {
+  var ui = btn.nextElementSibling;
+  ui.style.display = ui.style.display === 'none' ? 'block' : 'none';
+}
+function connectZoneCam(btn) {
+  var ui = btn.parentElement;
+  var input = ui.querySelector('input');
+  var img = ui.querySelector('img');
+  img.src = input.value;
+  img.style.display = 'block';
+}
+</script>
+
 </div>
 <script>
 function openCamConnect(btn) {
