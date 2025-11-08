@@ -1,7 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  
+  <section id="login-page" style="max-width:400px;margin:48px auto;padding:32px 24px;background:#fff;border-radius:16px;box-shadow:0 4px 24px #764ba233;">
+  <h2 style="text-align:center;color:#764ba2;margin-bottom:24px;">Login</h2>
+  <form onsubmit="return doLogin();">
+    <input type="text" id="login-username" placeholder="Username" required style="width:100%;margin-bottom:16px;padding:12px;border-radius:8px;border:1px solid #ccc;"><br>
+    <input type="password" id="login-password" placeholder="Password" required style="width:100%;margin-bottom:20px;padding:12px;border-radius:8px;border:1px solid #ccc;"><br>
+    <button type="submit" style="width:100%;padding:12px;border-radius:8px;background:#764ba2;color:#fff;font-weight:bold;">Login</button>
+  </form>
+</section>
+<main id="main-dashboard" style="display:none;">
+<meta charset="UTF-8"></main>
+<script>
+function doLogin() {
+  var user = document.getElementById('login-username').value;
+  var pass = document.getElementById('login-password').value;
+  if (user && pass) {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('main-dashboard').style.display = '';
+    return false;
+  } else {
+    alert('Please enter both username and password.');
+    return false;
+  }
+}
+</script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Security Monitor Agent</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
