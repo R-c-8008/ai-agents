@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, send_file
 from flask_cors import CORS
 import threading
 import time
@@ -216,6 +216,17 @@ def send_alert():
 def health_check():
     """Health check endpoint"""
     return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()}), 200
+
+# Serve frontend
+@app.route('/')
+def index():
+    """Serve the index.html page"""
+    return send_file('index.html')
+
+@app.route('/login')
+def login_page():
+    """Serve the login page"""
+    return send_file('login.html')
 
 if __name__ == '__main__':
         # Initialize database on startup
