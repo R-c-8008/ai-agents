@@ -5,7 +5,27 @@
   <section id="login-page" style="max-width:400px;margin:48px auto;padding:32px 24px;background:#fff;border-radius:16px;box-shadow:0 4px 24px #764ba233;">
   <h2 style="text-align:center;color:#764ba2;margin-bottom:24px;">Login</h2>
   <form onsubmit="return doLogin();">
-    <input type="text" id="login-username" placeholder="Username" required style="width:100%;margin-bottom:16px;padding:12px;border-radius:8px;border:1px solid #ccc;"><br>
+    <inpu<button onclick="openCamConnect(this)" style="margin-left:8px;margin-top:6px;background:#667eea;color:#fff;border-radius:6px;padding:7px 16px;border:none;font-weight:600;">Connect Camera</button>
+<div class="cam-connect-ui" style="display:none;margin-top:12px;">
+  <input type="text" placeholder="Paste Cam MJPEG/JPEG URL..." style="padding:8px;width:220px;border-radius:4px;">
+  <button onclick="connectZoneCam(this)">Show</button>
+  <br>
+  <img style="margin-top:10px;border-radius:8px;max-width:100%;display:none;">
+</div>
+<script>
+function openCamConnect(btn) {
+  var ui = btn.nextElementSibling;
+  ui.style.display = ui.style.display === 'none' ? 'block' : 'none';
+}
+function connectZoneCam(btn) {
+  var ui = btn.parentElement;
+  var input = ui.querySelector('input');
+  var img = ui.querySelector('img');
+  img.src = input.value;
+  img.style.display = 'block';
+}
+</script>
+t type="text" id="login-username" placeholder="Username" required style="width:100%;margin-bottom:16px;padding:12px;border-radius:8px;border:1px solid #ccc;"><br>
     <input type="password" id="login-password" placeholder="Password" required style="width:100%;margin-bottom:20px;padding:12px;border-radius:8px;border:1px solid #ccc;"><br>
     <button type="submit" style="width:100%;padding:12px;border-radius:8px;background:#764ba2;color:#fff;font-weight:bold;">Login</button>
   </form>
