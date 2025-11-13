@@ -607,11 +607,11 @@ function handleGoogleLogin(response) {
     <section>
       <h2>Threat Alerts</h2>
       <div class="filter-btns">
-        <button class="active">All</button>
-        <button>Critical</button>
-        <button>High</button>
-        <button>Medium</button>
-        <button>Low</button>
+        <button class="active onclick="filterAlerts(this)"">All</button>
+        <button>Critical</ onclick="filterAlerts(this)"button>
+        <button>High</ onclick="filterAlerts(this)"button>
+        <button>Medium</ onclick="filterAlerts(this)"button>
+        <button>Low</ onclick="filterAlerts(this)"button>
       </div>
       <div class="alerts-search">
         <input type="text" placeholder="Search alerts...">
@@ -625,9 +625,9 @@ function handleGoogleLogin(response) {
             <div>Description: Unrecognized person detected near gate.</div>
           </div>
           <div class="alert-actions">
-            <button>Clear</button>
-            <button>Investigate</button>
-            <button>Report</button>
+            <button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button>
+            <button onclick="investigateAlert(this)">Investigate</button>
+            <button onclick="reportAlert(this)">Report</button>
           </div>
         </div>
         <div class="alert-card">
@@ -638,9 +638,9 @@ function handleGoogleLogin(response) {
             <div>Description: Suspicious package detected.</div>
           </div>
           <div class="alert-actions">
-            <button>Clear</button>
-            <button>Investigate</button>
-            <button>Report</button>
+            <button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button>
+            <button onclick="investigateAlert(this)">Investigate</button>
+            <button onclick="reportAlert(this)">Report</button>
           </div>
         </div>
         <div class="alert-card">
@@ -651,9 +651,9 @@ function handleGoogleLogin(response) {
             <div>Description: Camera view obstructed.</div>
           </div>
           <div class="alert-actions">
-            <button>Clear</button>
-            <button>Investigate</button>
-            <button>Report</button>
+            <button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button>
+            <button onclick="investigateAlert(this)">Investigate</button>
+            <button onclick="reportAlert(this)">Report</button>
           </div>
         </div>
         <div class="alert-card">
@@ -664,9 +664,9 @@ function handleGoogleLogin(response) {
             <div>Description: Loud sound detected.</div>
           </div>
           <div class="alert-actions">
-            <button>Clear</button>
-            <button>Investigate</button>
-            <button>Report</button>
+            <button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button>
+            <button onclick="investigateAlert(this)">Investigate</button>
+            <button onclick="reportAlert(this)">Report</button>
           </div>
         </div>
       </div>
@@ -676,10 +676,10 @@ function handleGoogleLogin(response) {
     <section>
       <h2>Emergency Contacts</h2>
       <form class="contact-grid">
-        <div class="contact-row"><label for="police">Police</label><input type="tel" id="police" placeholder="Police Phone"><button class="test-btn">Test Call</button></div>
-        <div class="contact-row"><label for="ambulance">Ambulance</label><input type="tel" id="ambulance" placeholder="Ambulance Phone"><button class="test-btn">Test Call</button></div>
-        <div class="contact-row"><label for="fire">Fire</label><input type="tel" id="fire" placeholder="Fire Phone"><button class="test-btn">Test Call</button></div>
-        <div class="contact-row"><label for="owner">Owner</label><input type="tel" id="owner" placeholder="Owner Phone"><button class="test-btn">Test Call</button></div>
+        <div class="contact-row"><label for="police">Police</label><input type="tel" id="police" placeholder="Police Phone"><button class="test-btn" onclick="testCall(this)">Test Call</button></div>
+        <div class="contact-row"><label for="ambulance">Ambulance</label><input type="tel" id="ambulance" placeholder="Ambulance Phone"><button class="test-btn" onclick="testCall(this)">Test Call</button></div>
+        <div class="contact-row"><label for="fire">Fire</label><input type="tel" id="fire" placeholder="Fire Phone"><button class="test-btn" onclick="testCall(this)">Test Call</button></div>
+        <div class="contact-row"><label for="owner">Owner</label><input type="tel" id="owner" placeholder="Owner Phone"><button class="test-btn" onclick="testCall(this)">Test Call</button></div>
         <button type="submit" class="save-btn">Save Contacts</button>
       </form>
       <div class="contact-update">Last Updated: 20:03</div>
@@ -693,9 +693,9 @@ function handleGoogleLogin(response) {
         <button class="emergency-btn"><span>🚑</span>Ambulance</button>
         <button class="emergency-btn"><span>🔥</span>Fire</button>
       </div>
-      <div class="call-status">Call Status: No active emergency call</div>
-      <div class="recent-calls">
-        <strong>Recent Calls:</strong>
+      <div class="call-status"> onclick="emergencyCall('Police')"Call Status: No active emergency call</div>
+      <div class="recent-calls"> onclick="emergencyCall('Ambulance')"
+        <strong>Recent Calls:</ onclick="emergencyCall('Fire')"strong>
         <div class="recent-calls-list">
           <div>19:59 - Ambulance</div>
           <div>19:56 - Police</div>
@@ -721,19 +721,19 @@ function handleGoogleLogin(response) {
         <tbody>
           <tr>
             <td>20:02</td><td>Intrusion</td><td>Critical</td><td>Zone 1</td><td>Active</td>
-            <td class="table-actions"><button>View</button><button>Clear</button></td>
+            <td class="table-actions"><button>View</button><button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button></td>
           </tr>
           <tr>
             <td>20:01</td><td>Object Left</td><td>High</td><td>Zone 3</td><td>Resolved</td>
-            <td class="table-actions"><button>View</button><button>Clear</button></td>
+            <td class="table-actions"><button>View</button><button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button></td>
           </tr>
           <tr>
             <td>19:58</td><td>Tampering</td><td>Medium</td><td>Zone 4</td><td>Active</td>
-            <td class="table-actions"><button>View</button><button>Clear</button></td>
+            <td class="table-actions"><button>View</button><button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button></td>
           </tr>
           <tr>
             <td>19:55</td><td>Noise</td><td>Low</td><td>Zone 2</td><td>Active</td>
-            <td class="table-actions"><button>View</button><button>Clear</button></td>
+            <td class="table-actions"><button>View</button><button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button></td>
           </tr>
         </tbody>
       </table>
@@ -758,36 +758,36 @@ function handleGoogleLogin(response) {
           <div class="camera-live">Cam 1 <span class="live-badge">LIVE</span></div>
           <div class="camera-video">Video Stream</div>
           <div class="camera-controls">
-            <button>Snapshot</button>
-            <button>Record</button>
-            <button>Fullscreen</button>
+            <button onclick="takeSnapshot(this)">Snapshot</button>
+            <button onclick="recordVideo(this)">Record</button>
+            <button onclick="fullscreenVideo(this)">Fullscreen</button>
           </div>
         </div>
         <div class="camera-card">
           <div class="camera-live">Cam 2 <span class="live-badge">LIVE</span></div>
           <div class="camera-video">Video Stream</div>
           <div class="camera-controls">
-            <button>Snapshot</button>
-            <button>Record</button>
-            <button>Fullscreen</button>
+            <button onclick="takeSnapshot(this)">Snapshot</button>
+            <button onclick="recordVideo(this)">Record</button>
+            <button onclick="fullscreenVideo(this)">Fullscreen</button>
           </div>
         </div>
         <div class="camera-card">
           <div class="camera-live">Cam 3 <span class="live-badge">LIVE</span></div>
           <div class="camera-video">Video Stream</div>
           <div class="camera-controls">
-            <button>Snapshot</button>
-            <button>Record</button>
-            <button>Fullscreen</button>
+            <button onclick="takeSnapshot(this)">Snapshot</button>
+            <button onclick="recordVideo(this)">Record</button>
+            <button onclick="fullscreenVideo(this)">Fullscreen</button>
           </div>
         </div>
         <div class="camera-card">
           <div class="camera-live">Cam 4 <span class="live-badge">LIVE</span></div>
           <div class="camera-video">Video Stream</div>
           <div class="camera-controls">
-            <button>Snapshot</button>
-            <button>Record</button>
-            <button>Fullscreen</button>
+            <button onclick="takeSnapshot(this)">Snapshot</button>
+            <button onclick="recordVideo(this)">Record</button>
+            <button onclick="fullscreenVideo(this)">Fullscreen</button>
           </div>
         </div>
       </div>
