@@ -393,6 +393,29 @@ function handleGoogleLogin(response) {
             <button>Settings</button>
                                 <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
           </div>
+                          <!-- Camera Connection UI -->
+                <div class="cam-connect-ui" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
+                    <h4 style="margin-bottom:12px;color:#333;">Connect CCTV Camera</h4>
+                    <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
+                        <option value="rtsp">RTSP (IP Camera/NVR)</option>
+                        <option value="mjpeg">MJPEG Stream</option>
+                        <option value="webrtc">WebRTC</option>
+                        <option value="hls">HLS (HTTP Live Streaming)</option>
+                        <option value="onvif">ONVIF Protocol</option>
+                        <option value="hikvision">Hikvision</option>
+                        <option value="dahua">Dahua</option>
+                        <option value="axis">Axis Camera</option>
+                    </select>
+                    <input type="text" class="cam-url" placeholder="Camera URL (e.g., rtsp://192.168.1.100:554/stream)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
+                    <input type="text" class="cam-username" placeholder="Username (if required)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
+                    <input type="password" class="cam-password" placeholder="Password (if required)" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
+                    <button onclick="connectCamera(this)" style="background:#28a745;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;margin-right:8px;">Connect</button>
+                    <button onclick="closeCameraConnect(this)" style="background:#dc3545;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
+                    <div class="cam-preview" style="margin-top:16px;display:none;">
+                        <h5 style="margin-bottom:8px;">Camera Preview:</h5>
+                        <img class="cam-stream" style="width:100%;border-radius:8px;border:2px solid #28a745;" />
+                    </div>
+                </div>
         </div>
         <div class="zone-card">
           <div class="zone-title card-row">Zone 3</div>
@@ -406,6 +429,29 @@ function handleGoogleLogin(response) {
             <button>Settings</button>
                                 <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
           </div>
+                          <!-- Camera Connection UI -->
+                <div class="cam-connect-ui" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
+                    <h4 style="margin-bottom:12px;color:#333;">Connect CCTV Camera</h4>
+                    <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
+                        <option value="rtsp">RTSP (IP Camera/NVR)</option>
+                        <option value="mjpeg">MJPEG Stream</option>
+                        <option value="webrtc">WebRTC</option>
+                        <option value="hls">HLS (HTTP Live Streaming)</option>
+                        <option value="onvif">ONVIF Protocol</option>
+                        <option value="hikvision">Hikvision</option>
+                        <option value="dahua">Dahua</option>
+                        <option value="axis">Axis Camera</option>
+                    </select>
+                    <input type="text" class="cam-url" placeholder="Camera URL (e.g., rtsp://192.168.1.100:554/stream)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
+                    <input type="text" class="cam-username" placeholder="Username (if required)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
+                    <input type="password" class="cam-password" placeholder="Password (if required)" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
+                    <button onclick="connectCamera(this)" style="background:#28a745;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;margin-right:8px;">Connect</button>
+                    <button onclick="closeCameraConnect(this)" style="background:#dc3545;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
+                    <div class="cam-preview" style="margin-top:16px;display:none;">
+                        <h5 style="margin-bottom:8px;">Camera Preview:</h5>
+                        <img class="cam-stream" style="width:100%;border-radius:8px;border:2px solid #28a745;" />
+                    </div>
+                </div>
         </div>
         <div class="zone-card">
           <div class="zone-title card-row">Zone 4</div>
@@ -419,6 +465,29 @@ function handleGoogleLogin(response) {
             <button>Settings</button>
                                 <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
           </div>
+                          <!-- Camera Connection UI -->
+                <div class="cam-connect-ui" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
+                    <h4 style="margin-bottom:12px;color:#333;">Connect CCTV Camera</h4>
+                    <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
+                        <option value="rtsp">RTSP (IP Camera/NVR)</option>
+                        <option value="mjpeg">MJPEG Stream</option>
+                        <option value="webrtc">WebRTC</option>
+                        <option value="hls">HLS (HTTP Live Streaming)</option>
+                        <option value="onvif">ONVIF Protocol</option>
+                        <option value="hikvision">Hikvision</option>
+                        <option value="dahua">Dahua</option>
+                        <option value="axis">Axis Camera</option>
+                    </select>
+                    <input type="text" class="cam-url" placeholder="Camera URL (e.g., rtsp://192.168.1.100:554/stream)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
+                    <input type="text" class="cam-username" placeholder="Username (if required)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
+                    <input type="password" class="cam-password" placeholder="Password (if required)" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
+                    <button onclick="connectCamera(this)" style="background:#28a745;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;margin-right:8px;">Connect</button>
+                    <button onclick="closeCameraConnect(this)" style="background:#dc3545;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
+                    <div class="cam-preview" style="margin-top:16px;display:none;">
+                        <h5 style="margin-bottom:8px;">Camera Preview:</h5>
+                        <img class="cam-stream" style="width:100%;border-radius:8px;border:2px solid #28a745;" />
+                    </div>
+                </div>
         </div>
       </div>
     </section>
