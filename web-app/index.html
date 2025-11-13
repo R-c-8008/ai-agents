@@ -77,6 +77,117 @@ function connectZoneCam(btn) {
   img.src = input.value;
   img.style.display = 'block';
 }
+
+// Zone Monitoring Functions
+function startMonitoring(btn) {
+    var zoneCard = btn.closest('.zone-card');
+    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
+    var statusBadge = zoneCard.querySelector('.status-badge');
+    statusBadge.textContent = 'Active';
+    statusBadge.classList.remove('off');
+    statusBadge.classList.add('on');
+    alert(zoneTitle + ' monitoring started!');
+}
+
+function stopMonitoring(btn) {
+    var zoneCard = btn.closest('.zone-card');
+    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
+    var statusBadge = zoneCard.querySelector('.status-badge');
+    statusBadge.textContent = 'Paused';
+    statusBadge.classList.remove('on');
+    statusBadge.classList.add('off');
+    alert(zoneTitle + ' monitoring stopped!');
+}
+
+function viewDetails(btn) {
+    var zoneCard = btn.closest('.zone-card');
+    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
+    alert('Viewing details for ' + zoneTitle);
+}
+
+function zoneSettings(btn) {
+    var zoneCard = btn.closest('.zone-card');
+    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
+    alert('Opening settings for ' + zoneTitle);
+}
+
+// Alert Functions
+function clearAlert(btn) {
+    var alertCard = btn.closest('.alert-card');
+    if(confirm('Are you sure you want to clear this alert?')) {
+        alertCard.style.opacity = '0.5';
+        alertCard.style.textDecoration = 'line-through';
+    }
+}
+
+function investigateAlert(btn) {
+    var alertCard = btn.closest('.alert-card');
+    var alertType = alertCard.querySelector('.alert-type').textContent;
+    alert('Investigating: ' + alertType);
+}
+
+function reportAlert(btn) {
+    var alertCard = btn.closest('.alert-card');
+    var alertType = alertCard.querySelector('.alert-type').textContent;
+    alert('Generating report for: ' + alertType);
+}
+
+// Filter Functions
+function filterAlerts(btn) {
+    var filterBtns = document.querySelectorAll('.filter-btns button');
+    filterBtns.forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    alert('Filtering alerts: ' + btn.textContent);
+}
+
+// Emergency Contact Functions
+function testCall(btn) {
+    var contactRow = btn.closest('.contact-row');
+    var label = contactRow.querySelector('label').textContent;
+    alert('Testing call to ' + label);
+}
+
+function saveContacts() {
+    alert('Emergency contacts saved successfully!');
+    return false;
+}
+
+// Emergency Call Functions
+function emergencyCall(service) {
+    if(confirm('Call ' + service + '? This will alert emergency services!')) {
+        alert('Calling ' + service + '...');
+        document.querySelector('.call-status').textContent = 'Call Status: Calling ' + service + '...';
+    }
+}
+
+// Camera Feed Functions
+function takeSnapshot(btn) {
+    var cameraCard = btn.closest('.camera-card');
+    var camName = cameraCard.querySelector('.camera-live').textContent.split(' ')[0];
+    alert('Snapshot taken from ' + camName);
+}
+
+function recordVideo(btn) {
+    var cameraCard = btn.closest('.camera-card');
+    var camName = cameraCard.querySelector('.camera-live').textContent.split(' ')[0];
+    alert('Recording started for ' + camName);
+}
+
+function fullscreenVideo(btn) {
+    var cameraCard = btn.closest('.camera-card');
+    var camName = cameraCard.querySelector('.camera-live').textContent.split(' ')[0];
+    alert('Opening ' + camName + ' in fullscreen');
+}
+
+// Settings Functions
+function saveSettings() {
+    alert('Settings saved successfully!');
+}
+
+// Export Function
+function exportHistory() {
+    alert('Exporting alert history...');
+}
 </script>
 
 </div>
@@ -351,10 +462,10 @@ function handleGoogleLogin(response) {
           <div class="card-row">Threats Detected: <strong>2</strong></div>
           <div class="card-row">Last Scan: 20:02</div>
           <div class="zone-actions card-row">
-            <button>Start Monitoring</button>
-            <button>Stop Monitoring</button>
-            <button>View Details</button>
-            <button>Settings</button>
+            <button onclick="startMonitoring(this)">Start Monitoring</button>
+            <button>Stop Monitoring</ onclick="stopMonitoring(this)"button>
+            <button>View Details</ onclick="viewDetails(this)"button>
+            <button>Settings</button onclick="zoneSettings(this)">
                                 <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
           </div>
                               <!-- Camera Connection UI -->
@@ -387,13 +498,13 @@ function handleGoogleLogin(response) {
           <div class="card-row">Threats Detected: <strong>0</strong></div>
           <div class="card-row">Last Scan: 19:55</div>
           <div class="zone-actions card-row">
-            <button>Start Monitoring</button>
+            <button onclick="startMonitoring(this)">Start Monitoring</button>
             <button>Stop Monitoring</button>
             <button>View Details</button>
             <button>Settings</button>
                                 <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
           </div>
-                          <!-- Camera Connection UI -->
+                          <!-- Camera onclick="stopMonitoring(this)" Connection UI -->
                 <div class="cam-connect-ui" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
                     <h4 style="margin-bottom:12px;color:#333;">Connect CCTV Camera</h4>
                     <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
@@ -403,10 +514,10 @@ function handleGoogleLogin(response) {
                         <option value="hls">HLS (HTTP Live Streaming)</option>
                         <option value="onvif">ONVIF Protocol</option>
                         <option value="hikvision">Hikvision</option>
-                        <option value="dahua">Dahua</option>
-                        <option value="axis">Axis Camera</option>
+                        <option value="dahua"> onclick="stopMonitoring(this)"Dahua</option>
+                        <option value="axis"> onclick="viewDetails(this)"Axis Camera</option>
                     </select>
-                    <input type="text" class="cam-url" placeholder="Camera URL (e.g., rtsp://192.168.1.100:554/stream)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
+                    <input type onclick="zoneSettings(this)"="text" class="cam-url" placeholder="Camera URL (e.g., rtsp://192.168.1.100:554/stream)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
                     <input type="text" class="cam-username" placeholder="Username (if required)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
                     <input type="password" class="cam-password" placeholder="Password (if required)" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
                     <button onclick="connectCamera(this)" style="background:#28a745;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;margin-right:8px;">Connect</button>
@@ -423,15 +534,15 @@ function handleGoogleLogin(response) {
           <div class="card-row">Threats Detected: <strong>1</strong></div>
           <div class="card-row">Last Scan: 20:00</div>
           <div class="zone-actions card-row">
-            <button>Start Monitoring</button>
+            <button onclick="startMonitoring(this)">Start Monitoring</button>
             <button>Stop Monitoring</button>
             <button>View Details</button>
             <button>Settings</button>
                                 <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
           </div>
-                          <!-- Camera Connection UI -->
-                <div class="cam-connect-ui" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
-                    <h4 style="margin-bottom:12px;color:#333;">Connect CCTV Camera</h4>
+                          <!-- Camera onclick="stopMonitoring(this)" Connection UI -->
+                <div class="cam-connect-ui" onclick="viewDetails(this)" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
+                    <h4 style="margin-bottom: onclick="zoneSettings(this)"12px;color:#333;">Connect CCTV Camera</h4>
                     <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
                         <option value="rtsp">RTSP (IP Camera/NVR)</option>
                         <option value="mjpeg">MJPEG Stream</option>
@@ -459,15 +570,15 @@ function handleGoogleLogin(response) {
           <div class="card-row">Threats Detected: <strong>5</strong></div>
           <div class="card-row">Last Scan: 19:58</div>
           <div class="zone-actions card-row">
-            <button>Start Monitoring</button>
+            <button onclick="startMonitoring(this)">Start Monitoring</button>
             <button>Stop Monitoring</button>
             <button>View Details</button>
             <button>Settings</button>
                                 <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
           </div>
-                          <!-- Camera Connection UI -->
-                <div class="cam-connect-ui" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
-                    <h4 style="margin-bottom:12px;color:#333;">Connect CCTV Camera</h4>
+                          <!-- Camera onclick="stopMonitoring(this)" Connection UI -->
+                <div class="cam-connect-ui" onclick="viewDetails(this)" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
+                    <h4 style="margin-bottom: onclick="zoneSettings(this)"12px;color:#333;">Connect CCTV Camera</h4>
                     <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
                         <option value="rtsp">RTSP (IP Camera/NVR)</option>
                         <option value="mjpeg">MJPEG Stream</option>
