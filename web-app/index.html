@@ -61,6 +61,7 @@ function connectZoneCam(btn) {
 t type="text" id="login-username" placeholder="Username" required style="width:100%;margin-bottom:16px;padding:12px;border-radius:8px;border:1px solid #ccc;"><br>
     <input type="password" id="login-password" placeholder="Password" required style="width:100%;margin-bottom:20px;padding:12px;border-radius:8px;border:1px solid #ccc;"><br>
     <button type="submit" style="width:100%;padding:12px;border-radius:8px;background:#764ba2;color:#fff;font-weight:bold;">Login</button>
+           <button type="button" onclick="loginWithGoogle()" style="width:100%;padding:12px;border-radius:8px;background:#db4437;color:#fff;font-weight:bold;margin-bottom:16px;">Login with Google</button>
   </form>
 </section>
 <main id="main-dashboard" style="display:none;">
@@ -77,6 +78,10 @@ function doLogin() {
     alert('Please enter both username and password.');
     return false;
   }
+  function loginWithGoogle() {
+  alert('Google OAuth authentication will be implemented here.');
+  // TODO: Integrate with Google Sign-In API or Firebase Auth
+}
 }
 </script>
 
