@@ -78,9 +78,22 @@ function doLogin() {
     return false;
   }
   function loginWithGoogle() {
-  alert('Google OAuth authentication will be implemented here.');
-  // TODO: Integrate with Google Sign-In API or Firebase Auth
+    // Using Google Identity Services (One Tap)
+    google.accounts.id.initialize({
+        client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+        callback: handleGoogleLogin
+    });
+    google.accounts.id.prompt(); // Show the One Tap dialog
 }
+
+function handleGoogleLogin(response) {
+    // response.credential contains the JWT token
+    console.log('Google login successful:', response);
+    // Hide login page and show dashboard
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('main-dashboard').style.display = '';
+    // You can decode the JWT token and get user info
+    // Or send it to your backend for verification
 }
 </script>
 
@@ -286,6 +299,8 @@ function doLogin() {
             margin: 12px 0;
         }
     </style>
+      <!-- Google Identity Services Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <header>Security Monitor Agent Dashboard</header>
