@@ -102,15 +102,98 @@ function stopMonitoring(btn) {
 function viewDetails(btn) {
     var zoneCard = btn.closest('.zone-card');
     var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
-    alert('Viewing details for ' + zoneTitle);
+    var cameraId = zoneCard.querySelector('.card-row').textContent.match(/CAM\d+/)[0];
+    var status = zoneCard.querySelector('.status-badge').textContent;
+    var threats = zoneCard.querySelectorAll('.card-row')[1].textContent.match(/\d+/)[0];
+    
+    // Open new page with zone details
+    var detailsWindow = window.open('', '_blank', 'width=800,height=600');
+    detailsWindow.document.write(`
+        <html>
+        <head>
+            <title>${zoneTitle} Details</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+                .container { background: white; padding: 30px; border-radius: 12px; max-width: 700px; margin: 0 auto; }
+                h1 { color: #5e72e4; }
+                .info-row { padding: 10px; border-bottom: 1px solid #eee; }
+                .label { font-weight: bold; color: #555; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>${zoneTitle} - Detailed Information</h1>
+                <div class="info-row"><span class="label">Camera ID:</span> ${cameraId}</div>
+                <div class="info-row"><span class="label">Status:</span> ${status}</div>
+                <div class="info-row"><span class="label">Threats Detected:</span> ${threats}</div>
+                <div class="info-row"><span class="label">Resolution:</span> 1920x1080</div>
+                <div class="info-row"><span class="label">FPS:</span> 30</div>
+                <div class="info-row"><span class="label">Connection:</span> Stable</div>
+                <div class="info-row"><span class="label">Last Maintenance:</span> 2025-11-10</div>
+            </div>
+        </body>
+        </html>
+    `);
 }
-
 function zoneSettings(btn) {
     var zoneCard = btn.closest('.zone-card');
     var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
-    alert('Opening settings for ' + zoneTitle);
+    var cameraId = zoneCard.querySelector('.card-row').textContent.match(/CAM\d+/)[0];
+    
+    // Open settings page
+    var settingsWindow = window.open('', '_blank', 'width=600,height=700');
+    settingsWindow.document.write(`
+        <html>
+        <head>
+            <title>${zoneTitle} Settings</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+                .container { background: white; padding: 30px; border-radius: 12px; }
+                h1 { color: #5e72e4; }
+                .setting-group { margin: 20px 0; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
+                label { display: block; margin: 10px 0 5px 0; font-weight: bold; color: #555; }
+                input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+                button { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; margin-top: 20px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>${zoneTitle} - Settings</h1>
+                <p><strong>Camera ID:</strong> ${cameraId}</p>
+                
+                <div class="setting-group">
+                    <h3>Detection Settings</h3>
+                    <label>Sensitivity:</label>
+                    <input type="range" min="1" max="10" value="7">
+                    
+                    <label>Detection Mode:</label>
+                    <select>
+                        <option>Motion Detection</option>
+                        <option>Object Recognition</option>
+                        <option>Person Detection</option>
+                        <option>Vehicle Detection</option>
+                    </select>
+                </div>
+                
+                <div class="setting-group">
+                    <h3>Alert Settings</h3>
+                    <label>Alert Threshold:</label>
+                    <input type="number" value="3" min="1" max="10">
+                    
+                    <label>Notification Method:</label>
+                    <select>
+                        <option>Email</option>
+                        <option>SMS</option>
+                        <option>Both</option>
+                    </select>
+                </div>
+                
+                <button onclick="alert('Settings saved!');window.close();">Save Settings</button>
+            </div>
+        </body>
+        </html>
+    `);
 }
-
 // Alert Functions
 function clearAlert(btn) {
     var alertCard = btn.closest('.alert-card');
