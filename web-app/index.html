@@ -131,6 +131,28 @@ function viewDetails(btn) {
                 <div class="info-row"><span class="label">Connection:</span> Stable</div>
                 <div class="info-row"><span class="label">Last Maintenance:</span> 2025-11-10</div>
             </div>
+
+  <!-- View Details Modal -->
+<div id="detailsModal" class="modal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background:#fff;margin:5% auto;padding:30px;width:80%;max-width:700px;border-radius:12px;position:relative;">
+        <span class="close-modal" onclick="document.getElementById('detailsModal').style.display='none'" style="position:absolute;right:20px;top:15px;font-size:28px;font-weight:bold;cursor:pointer;color:#999;">&times;</span>
+        <h2 id="modalTitle" style="color:#5e72e4;margin-bottom:20px;">Zone Details</h2>
+        <div id="modalContent">
+            <!-- Dynamic content will be inserted here -->
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background:#fff;margin:3% auto;padding:30px;width:80%;max-width:600px;border-radius:12px;position:relative;max-height:85vh;overflow-y:auto;">
+        <span class="close-modal" onclick="document.getElementById('settingsModal').style.display='none'" style="position:absolute;right:20px;top:15px;font-size:28px;font-weight:bold;cursor:pointer;color:#999;">&times;</span>
+        <h2 id="settingsTitle" style="color:#5e72e4;margin-bottom:20px;">Zone Settings</h2>
+        <div id="settingsContent">
+            <!-- Dynamic settings will be inserted here -->
+        </div>
+    </div>
+</div>
         </body>
         </html>
     `);
@@ -270,6 +292,66 @@ function saveSettings() {
 // Export Function
 function exportHistory() {
     alert('Exporting alert history...');
+}
+
+          // MODAL-BASED FUNCTIONS (replacing window.open versions)
+function viewDetails(btn) {
+    var zoneCard = btn.closest('.zone-card');
+    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
+    var cameraId = zoneCard.querySelector('.card-row').textContent.match(/CAM\d+/)[0];
+    var status = zoneCard.querySelector('.status-badge').textContent;
+    var threats = zoneCard.querySelectorAll('.card-row')[1].textContent.match(/\d+/)[0];
+    
+    document.getElementById('modalTitle').textContent = zoneTitle + ' - Detailed Information';
+    document.getElementById('modalContent').innerHTML = `
+        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Camera ID:</strong> ${cameraId}</div>
+        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Status:</strong> ${status}</div>
+        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Threats Detected:</strong> ${threats}</div>
+        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Resolution:</strong> 1920x1080</div>
+        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>FPS:</strong> 30</div>
+        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Connection:</strong> Stable</div>
+        <div style="padding:10px 0;"><strong>Last Maintenance:</strong> 2025-11-10</div>
+    `;
+    document.getElementById('detailsModal').style.display = 'block';
+}
+
+function zoneSettings(btn) {
+    var zoneCard = btn.closest('.zone-card');
+    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
+    var cameraId = zoneCard.querySelector('.card-row').textContent.match(/CAM\d+/)[0];
+    
+    document.getElementById('settingsTitle').textContent = zoneTitle + ' - Settings';
+    document.getElementById('settingsContent').innerHTML = `
+        <p><strong>Camera ID:</strong> ${cameraId}</p>
+        <div style="margin:20px 0;padding:15px;border:1px solid #eee;border-radius:8px;">
+            <h3 style="margin-top:0;">Detection Settings</h3>
+            <label style="display:block;margin:10px 0;">Sensitivity:</label>
+            <input type="range" min="1" max="10" value="7" style="width:100%;">
+            <label style="display:block;margin:10px 0 5px 0;">Detection Mode:</label>
+            <select style="width:100%;padding:8px;">
+                <option>Motion Detection</option>
+                <option>Object Recognition</option>
+                <option>Person Detection</option>
+                <option>Vehicle Detection</option>
+            </select>
+        </div>
+        <div style="margin:20px 0;padding:15px;border:1px solid #eee;border-radius:8px;">
+            <h3 style="margin-top:0;">Alert Settings</h3>
+            <label style="display:block;margin:10px 0 5px 0;">Alert Threshold:</label>
+            <input type="number" value="3" min="1" max="10" style="width:100%;padding:8px;">
+            <label style="display:block;margin:10px 0 5px 0;">Notification Method:</label>
+            <select style="width:100%;padding:8px;">
+                <option>Email</option>
+                <option>SMS</option>
+                <option>Both</option>
+            </select>
+        </div>
+        <button onclick="alert('Settings saved!');document.getElementById('settingsModal').style.display='none';" 
+                style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:12px 24px;border:none;border-radius:6px;cursor:pointer;">
+            Save Settings
+        </button>
+    `;
+    document.getElementById('settingsModal').style.display = 'block';
 }
 </script>
 
