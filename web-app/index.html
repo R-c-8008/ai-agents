@@ -1,1046 +1,682 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
-  <section id="login-page" style="max-width:400px;margin:48px auto;padding:32px 24px;background:#fff;border-radius:16px;box-shadow:0 4px 24px #764ba233;">
-  <h2 style="text-align:center;color:#764ba2;margin-bottom:24px;">Login</h2>
-  <form onsubmit="return doLogin();">
-<div class="cam-connect-ui" style="display:none;margin-top:12px;">
-  <input type="text" placeholder="Paste Cam MJPEG/JPEG URL..." style="padding:8px;width:220px;border-radius:4px;">
-  <button onclick="connectZoneCam(this)">Show</button>
-  <br>
-  <img style=<button onclick="openCamConnect(this)" style="margin-left:8px;margin-top:6px;background:#667eea;color:#fff;border-radius:6px;padding:7px 16px;border:none;font-weight:600;">Connect Camera</button>
-<div class="cam-connect-ui" style="display:none;margin-top:12px;">
-  <input type="text" placeholder="Paste Cam MJPEG/JPEG URL..." style="padding:8px;width:220px;border-radius:4px;">
-  <button onclick="connectZoneCam(this)">Show</button>
-  <br>
-  <img style="margin-top:10px;border-radius:8px;max-width:100%;display:none;">
-</div>
-  <"margin-top:10px;border-radius:8px;max-width:100%;display:none;"></main>
-<script>
-function doLogin() {
-  var user = document.getElementById('login-username').value;
-  var pass = document.getElementById('login-password').value;
-  if (user && pass) {
-    document.getElementById('login-page').style.display = 'none';
-    document.getElementById('main-dashboard').style.display = '';
-    return false;
-  } else {
-    alert('Please enter both username and password.');
-    return false;
-  }
-}
-function openCamConnect(btn) {
-  var ui = btn.nextElementSibling;
-  ui.style.display = ui.style.display === 'none' ? 'block' : 'none';
-}
-
-  function connectCamera(btn) {
-    var ui = btn.closest('.cam-connect-ui');
-    var camType = ui.querySelector('.cam-type').value;
-    var camUrl = ui.querySelector('.cam-url').value;
-    var username = ui.querySelector('.cam-username').value;
-    var password = ui.querySelector('.cam-password').value;
-    
-    if (!camUrl) {
-        alert('Please enter camera URL');
-        return;
-    }
-    
-    // Show preview section
-    var preview = ui.querySelector('.cam-preview');
-    var stream = ui.querySelector('.cam-stream');
-    preview.style.display = 'block';
-    
-    // For demonstration, show the URL as connected
-    // In production, you would connect to actual camera stream
-    alert('Connecting to ' + camType.toUpperCase() + ' camera at: ' + camUrl);
-    stream.src = camUrl; // This works for MJPEG and some other stream types
-    stream.onerror = function() {
-        alert('Failed to connect. Check camera URL and credentials.');
-    };
-}
-
-function closeCameraConnect(btn) {
-    var ui = btn.closest('.cam-connect-ui');
-    ui.style.display = 'none';
-    // Clear inputs
-    ui.querySelector('.cam-url').value = '';
-    ui.querySelector('.cam-username').value = '';
-    ui.querySelector('.cam-password').value = '';
-    ui.querySelector('.cam-preview').style.display = 'none';
-}
-function connectZoneCam(btn) {
-  var ui = btn.parentElement;
-  var input = ui.querySelector('input');
-  var img = ui.querySelector('img');
-  img.src = input.value;
-  img.style.display = 'block';
-}
-
-// Zone Monitoring Functions
-function startMonitoring(btn) {
-    var zoneCard = btn.closest('.zone-card');
-    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
-    var statusBadge = zoneCard.querySelector('.status-badge');
-    statusBadge.textContent = 'Active';
-    statusBadge.classList.remove('off');
-    statusBadge.classList.add('on');
-    alert(zoneTitle + ' monitoring started!');
-}
-
-function stopMonitoring(btn) {
-    var zoneCard = btn.closest('.zone-card');
-    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
-    var statusBadge = zoneCard.querySelector('.status-badge');
-    statusBadge.textContent = 'Paused';
-    statusBadge.classList.remove('on');
-    statusBadge.classList.add('off');
-    alert(zoneTitle + ' monitoring stopped!');
-}
-
-function viewDetails(btn) {
-    var zoneCard = btn.closest('.zone-card');
-    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
-    var cameraId = zoneCard.querySelector('.card-row').textContent.match(/CAM\d+/)[0];
-    var status = zoneCard.querySelector('.status-badge').textContent;
-    var threats = zoneCard.querySelectorAll('.card-row')[1].textContent.match(/\d+/)[0];
-    
-    // Open new page with zone details
-    var detailsWindow = window.open('', '_blank', 'width=800,height=600');
-    detailsWindow.document.write(`
-        <html>
-        <head>
-            <title>${zoneTitle} Details</title>
-            <style>
-                body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-                .container { background: white; padding: 30px; border-radius: 12px; max-width: 700px; margin: 0 auto; }
-                h1 { color: #5e72e4; }
-                .info-row { padding: 10px; border-bottom: 1px solid #eee; }
-                .label { font-weight: bold; color: #555; }
-            </style>
-        </head>
-        <body>
-              <!-- Sidebar Navigation -->
-                  <div class="sidebar" id="sidebar">
-                            <div class="sidebar-header"><h3>Menu</h3></div>
-                                    <nav class="sidebar-nav">
-                                                  <a href="#" onclick="showSection('dashboard')">Dashboard</a>
-                                                              <a href="#" onclick="showSection('settings')">Settings</a>
-                                                                          <a href="#" onclick="showSection('connect-cam')">Connect New Cam</a>
-                                                                                      <a href="#" onclick="showSection('alert-history')">Alert History</a>
-                                                                                                  <a href="#" onclick="toggleNotifications()">Notifications</a>
-                                                                                                          </nav></div>
-
-                                                                                                              <!-- Main Content Wrapper -->
-                                                                                                                  <div class="main-content" id="main-wrapper">
-                                                                                                                            <div class="top-bar">
-                                                                                                                                          <h1>Security Monitor Agent Dashboard</h1>
-                                                                                                                                                      <button class="profile-btn" onclick="showProfile()">Profile</button>
-                                                                                                                                                              </div>
-            <div class="container">
-                <h1>${zoneTitle} - Detailed Information</h1>
-                <div class="info-row"><span class="label">Camera ID:</span> ${cameraId}</div>
-                <div class="info-row"><span class="label">Status:</span> ${status}</div>
-                <div class="info-row"><span class="label">Threats Detected:</span> ${threats}</div>
-                <div class="info-row"><span class="label">Resolution:</span> 1920x1080</div>
-                <div class="info-row"><span class="label">FPS:</span> 30</div>
-                <div class="info-row"><span class="label">Connection:</span> Stable</div>
-                <div class="info-row"><span class="label">Last Maintenance:</span> 2025-11-10</div>
-            </div>
-
-  <!-- View Details Modal -->
-<div id="detailsModal" class="modal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);">
-    <div class="modal-content" style="background:#fff;margin:5% auto;padding:30px;width:80%;max-width:700px;border-radius:12px;position:relative;">
-        <span class="close-modal" onclick="document.getElementById('detailsModal').style.display='none'" style="position:absolute;right:20px;top:15px;font-size:28px;font-weight:bold;cursor:pointer;color:#999;">&times;</span>
-        <h2 id="modalTitle" style="color:#5e72e4;margin-bottom:20px;">Zone Details</h2>
-        <div id="modalContent">
-            <!-- Dynamic content will be inserted here -->
-        </div>
-    </div>
-</div>
-
-<!-- Settings Modal -->
-<div id="settingsModal" class="modal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);">
-    <div class="modal-content" style="background:#fff;margin:3% auto;padding:30px;width:80%;max-width:600px;border-radius:12px;position:relative;max-height:85vh;overflow-y:auto;">
-        <span class="close-modal" onclick="document.getElementById('settingsModal').style.display='none'" style="position:absolute;right:20px;top:15px;font-size:28px;font-weight:bold;cursor:pointer;color:#999;">&times;</span>
-        <h2 id="settingsTitle" style="color:#5e72e4;margin-bottom:20px;">Zone Settings</h2>
-        <div id="settingsContent">
-            <!-- Dynamic settings will be inserted here -->
-        </div>
-    </div>
-</div>
-        </body>
-        </html>
-    `);
-}
-function zoneSettings(btn) {
-    var zoneCard = btn.closest('.zone-card');
-    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
-    var cameraId = zoneCard.querySelector('.card-row').textContent.match(/CAM\d+/)[0];
-    
-    // Open settings page
-    var settingsWindow = window.open('', '_blank', 'width=600,height=700');
-    settingsWindow.document.write(`
-        <html>
-        <head>
-            <title>${zoneTitle} Settings</title>
-            <style>
-                body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-                .container { background: white; padding: 30px; border-radius: 12px; }
-                h1 { color: #5e72e4; }
-                .setting-group { margin: 20px 0; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
-                label { display: block; margin: 10px 0 5px 0; font-weight: bold; color: #555; }
-                input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-                button { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; margin-top: 20px; }
-                    /* Sidebar and Layout Styles */
-                            .sidebar { position: fixed; left: 0; top: 0; width: 250px; height: 100vh; background: #2d3748; color: white; padding: 20px; overflow-y: auto; z-index: 1000; }
-                                    .sidebar-header { margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #667eea; }
-                                            .sidebar-header h3 { color: #667eea; font-size: 24px; }
-                                                    .sidebar-nav a { display: block; padding: 12px 15px; margin: 8px 0; color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s; }
-                                                            .sidebar-nav a:hover { background: #667eea; transform: translateX(5px); }
-                                                                    .main-content { margin-left: 270px; padding: 20px; min-height: 100vh; }
-                                                                            .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: linear-gradient(135deg, #5e72e4, #825ee4); border-radius: 16px; margin-bottom: 20px; color: white; }
-                                                                                    .top-bar h1 { font-size: 28px; margin: 0; }
-                                                                                            .profile-btn { background: white; color: #5e72e4; padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-                                                                                                    .profile-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
-                </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>${zoneTitle} - Settings</h1>
-                <p><strong>Camera ID:</strong> ${cameraId}</p>
-                
-                <div class="setting-group">
-                    <h3>Detection Settings</h3>
-                    <label>Sensitivity:</label>
-                    <input type="range" min="1" max="10" value="7">
-                    
-                    <label>Detection Mode:</label>
-                    <select>
-                        <option>Motion Detection</option>
-                        <option>Object Recognition</option>
-                        <option>Person Detection</option>
-                        <option>Vehicle Detection</option>
-                    </select>
-                </div>
-                
-                <div class="setting-group">
-                    <h3>Alert Settings</h3>
-                    <label>Alert Threshold:</label>
-                    <input type="number" value="3" min="1" max="10">
-                    
-                    <label>Notification Method:</label>
-                    <select>
-                        <option>Email</option>
-                        <option>SMS</option>
-                        <option>Both</option>
-                    </select>
-                </div>
-                
-                <button onclick="alert('Settings saved!');window.close();">Save Settings</button>
-                                    <button onclick="deleteZone(this)" style="background:#f56565;">Delete Zone</button>
-            </div>
-        </body>
-        </html>
-    `);
-}
-// Alert Functions
-function clearAlert(btn) {
-    var alertCard = btn.closest('.alert-card');
-    if(confirm('Are you sure you want to clear this alert?')) {
-        alertCard.style.opacity = '0.5';
-        alertCard.style.textDecoration = 'line-through';
-    }
-}
-
-function investigateAlert(btn) {
-    var alertCard = btn.closest('.alert-card');
-    var alertType = alertCard.querySelector('.alert-type').textContent;
-    alert('Investigating: ' + alertType);
-}
-
-function reportAlert(btn) {
-    var alertCard = btn.closest('.alert-card');
-    var alertType = alertCard.querySelector('.alert-type').textContent;
-    alert('Generating report for: ' + alertType);
-}
-
-// Filter Functions
-function filterAlerts(btn) {
-    var filterBtns = document.querySelectorAll('.filter-btns button');
-    filterBtns.forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    alert('Filtering alerts: ' + btn.textContent);
-}
-
-// Emergency Contact Functions
-function testCall(btn) {
-    var contactRow = btn.closest('.contact-row');
-    var label = contactRow.querySelector('label').textContent;
-    alert('Testing call to ' + label);
-}
-
-function saveContacts() {
-    alert('Emergency contacts saved successfully!');
-    return false;
-}
-
-// Emergency Call Functions
-function emergencyCall(service) {
-    if(confirm('Call ' + service + '? This will alert emergency services!')) {
-        alert('Calling ' + service + '...');
-        document.querySelector('.call-status').textContent = 'Call Status: Calling ' + service + '...';
-    }
-}
-
-// Camera Feed Functions
-function takeSnapshot(btn) {
-    var cameraCard = btn.closest('.camera-card');
-    var camName = cameraCard.querySelector('.camera-live').textContent.split(' ')[0];
-    alert('Snapshot taken from ' + camName);
-}
-
-function recordVideo(btn) {
-    var cameraCard = btn.closest('.camera-card');
-    var camName = cameraCard.querySelector('.camera-live').textContent.split(' ')[0];
-    alert('Recording started for ' + camName);
-}
-
-function fullscreenVideo(btn) {
-    var cameraCard = btn.closest('.camera-card');
-    var camName = cameraCard.querySelector('.camera-live').textContent.split(' ')[0];
-    alert('Opening ' + camName + ' in fullscreen');
-}
-
-// Settings Functions
-function saveSettings() {
-    alert('Settings saved successfully!');
-}
-
-// Export Function
-function exportHistory() {
-    alert('Exporting alert history...');
-}
-
-        // NEW FUNCTIONS FOR UI DIAGRAM
-                function showSection(section) {
-                              document.getElementById('main-dashboard').style.display = section === 'dashboard' ? 'block' : 'none';
-                                          document.getElementById('profile-section').style.display = section === 'profile' ? 'block' : 'none';
-                                                      // Add more sections as needed
-                                                              }
-
-                                                                      function showProfile() {
-                                                                                    document.getElementById('main-dashboard').style.display = 'none';
-                                                                                                document.getElementById('profile-section').style.display = 'block';
-                                                                                                        }
-
-                                                                                                                function saveProfile() { alert('Profile saved successfully!'); }
-
-                                                                                                                        function deleteZone(btn) { if(confirm('Delete this zone?')) { btn.closest('.zone-card').remove(); } }
-
-                                                                                                                                function toggleNotifications() { alert('Notification settings toggled!'); }
-                                                                                                                                        function toggleDarkMode() { alert('Dark mode toggled!'); }
-
-          // MODAL-BASED FUNCTIONS (replacing window.open versions)
-function viewDetails(btn) {
-    var zoneCard = btn.closest('.zone-card');
-    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
-    var cameraId = zoneCard.querySelector('.card-row').textContent.match(/CAM\d+/)[0];
-    var status = zoneCard.querySelector('.status-badge').textContent;
-    var threats = zoneCard.querySelectorAll('.card-row')[1].textContent.match(/\d+/)[0];
-    
-    document.getElementById('modalTitle').textContent = zoneTitle + ' - Detailed Information';
-    document.getElementById('modalContent').innerHTML = `
-        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Camera ID:</strong> ${cameraId}</div>
-        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Status:</strong> ${status}</div>
-        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Threats Detected:</strong> ${threats}</div>
-        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Resolution:</strong> 1920x1080</div>
-        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>FPS:</strong> 30</div>
-        <div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>Connection:</strong> Stable</div>
-        <div style="padding:10px 0;"><strong>Last Maintenance:</strong> 2025-11-10</div>
-    `;
-    document.getElementById('detailsModal').style.display = 'block';
-}
-
-function zoneSettings(btn) {
-    var zoneCard = btn.closest('.zone-card');
-    var zoneTitle = zoneCard.querySelector('.zone-title').textContent;
-    var cameraId = zoneCard.querySelector('.card-row').textContent.match(/CAM\d+/)[0];
-    
-    document.getElementById('settingsTitle').textContent = zoneTitle + ' - Settings';
-    document.getElementById('settingsContent').innerHTML = `
-        <p><strong>Camera ID:</strong> ${cameraId}</p>
-        <div style="margin:20px 0;padding:15px;border:1px solid #eee;border-radius:8px;">
-            <h3 style="margin-top:0;">Detection Settings</h3>
-            <label style="display:block;margin:10px 0;">Sensitivity:</label>
-            <input type="range" min="1" max="10" value="7" style="width:100%;">
-            <label style="display:block;margin:10px 0 5px 0;">Detection Mode:</label>
-            <select style="width:100%;padding:8px;">
-                <option>Motion Detection</option>
-                <option>Object Recognition</option>
-                <option>Person Detection</option>
-                <option>Vehicle Detection</option>
-            </select>
-        </div>
-        <div style="margin:20px 0;padding:15px;border:1px solid #eee;border-radius:8px;">
-            <h3 style="margin-top:0;">Alert Settings</h3>
-            <label style="display:block;margin:10px 0 5px 0;">Alert Threshold:</label>
-            <input type="number" value="3" min="1" max="10" style="width:100%;padding:8px;">
-            <label style="display:block;margin:10px 0 5px 0;">Notification Method:</label>
-            <select style="width:100%;padding:8px;">
-                <option>Email</option>
-                <option>SMS</option>
-                <option>Both</option>
-            </select>
-        </div>
-        <button onclick="alert('Settings saved!');document.getElementById('settingsModal').style.display='none';" 
-                style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:12px 24px;border:none;border-radius:6px;cursor:pointer;">
-            Save Settings
-        </button>
-    `;
-    document.getElementById('settingsModal').style.display = 'block';
-}
-</script>
-
-</div>
-<script>
-function openCamConnect(btn) {
-  var ui = btn.nextElementSibling;
-  ui.style.display = ui.style.display === 'none' ? 'block' : 'none';
-}
-function connectZoneCam(btn) {
-  var ui = btn.parentElement;
-  var input = ui.querySelector('input');
-  var img = ui.querySelector('img');
-  img.src = input.value;
-  img.style.display = 'block';
-}
-</script>
-    <input type="text" id="login-username" placeholder="Username" required style="width:100%;margin-bottom:16px;padding:12px;border-radius:8px;border:1px solid #ccc;"><br>
-    <input type="password" id="login-password" placeholder="Password" required style="width:100%;margin-bottom:20px;padding:12px;border-radius:8px;border:1px solid #ccc;"><br>
-    <button type="submit" style="width:100%;padding:12px;border-radius:8px;background:#764ba2;color:#fff;font-weight:bold;">Login</button>
-           <button type="button" onclick="loginWithGoogle()" style="width:100%;padding:12px;border-radius:8px;background:#db4437;color:#fff;font-weight:bold;margin-bottom:16px;">Login with Google</button>
-  </form>
-</section>
-<main id="main-dashboard" style="display:none;">
-<meta charset="UTF-8"></main>
-<script>
-function doLogin() {
-  var user = document.getElementById('login-username').value;
-  var pass = document.getElementById('login-password').value;
-  if (user && pass) {
-    document.getElementById('login-page').style.display = 'none';
-    document.getElementById('main-dashboard').style.display = '';
-    return false;
-  } else {
-    alert('Please enter both username and password.');
-    return false;
-  }
-  function loginWithGoogle() {
-    // Using Google Identity Services (One Tap)
-    google.accounts.id.initialize({
-        client_id: '663908154600-ona5houul2fjs5lp0gqpm7ovehdmuvbp.apps.googleusercontent.com',
-        callback: handleGoogleLogin
-    });
-    google.accounts.id.prompt(); // Show the One Tap dialog
-}
-
-function handleGoogleLogin(response) {
-    // response.credential contains the JWT token
-    console.log('Google login successful:', response);
-    // Hide login page and show dashboard
-    document.getElementById('login-page').style.display = 'none';
-    document.getElementById('main-dashboard').style.display = '';
-    // You can decode the JWT token and get user info
-    // Or send it to your backend for verification
-}
-</script>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Security Monitor Agent</title>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Monitor Agent</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Login Page Styles */
+        #login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
             padding: 20px;
         }
-        header {
-            background: linear-gradient(135deg, #5e72e4, #825ee4);
-            color: white;
-            padding: 25px 40px;
+        
+        .login-container {
+            background: white;
+            padding: 40px;
             border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(94, 114, 228, 0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-container h2 {
+            text-align: center;
+            color: #333;
             margin-bottom: 30px;
             font-size: 28px;
-            font-weight: 700;
-            text-align: center;
         }
-        main { max-width: 1400px; margin: 0 auto; }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .login-btn, .google-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 12px;
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .google-btn {
+            background: #4285f4;
+            color: white;
+        }
+        
+        .login-btn:hover, .google-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        /* Dashboard Layout */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+        
+        .dashboard-wrapper {
+            display: flex;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: #2d3748;
+            min-height: 100vh;
+            padding: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+        
+        .sidebar h2 {
+            color: white;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .sidebar nav a {
+            display: block;
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: #667eea;
+            transform: translateX(5px);
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+        }
+        
+        /* Top Bar */
+        .top-bar {
+            background: linear-gradient(135deg, #5e72e4, #825ee4);
+            padding: 20px 30px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        .top-bar h1 {
+            font-size: 24px;
+        }
+        
+        .profile-btn {
+            background: white;
+            color: #5e72e4;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        /* Section Styles */
         section {
             background: white;
             border-radius: 16px;
             padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-        }
-        h2 {
-            color: #2d3748;
-            font-size: 24px;
             margin-bottom: 20px;
-            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
         }
-        .zones-grid, .camera-grid {
+        
+        section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        /* Connected Cameras Grid */
+        .cameras-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
-        .zone-card, .camera-card {
-            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
-            border-radius: 12px;
+        
+        .camera-card {
+            background: #f8f9fa;
             padding: 20px;
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
         }
-        .zone-card:hover, .camera-card:hover {
+        
+        .camera-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(94, 114, 228, 0.2);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             border-color: #667eea;
         }
-        .zone-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #5e72e4;
-            margin-bottom: 12px;
-        }
-        .card-row { margin: 10px 0; color: #4a5568; font-size: 14px; }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .status-badge.on { background: #48bb78; color: white; }
-        .status-badge.off { background: #f56565; color: white; }
-        button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: all 0.3s ease;
-            margin: 4px;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        .filter-btns button {
-            background: #e2e8f0;
-            color: #4a5568;
-            margin: 5px;
-        }
-        .filter-btns button.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-        .alerts-search input, input[type="text"], input[type="tel"], input[type="date"] {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            margin: 10px 0;
-            transition: border-color 0.3s;
-        }
-        .alerts-search input:focus, input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .alert-card {
-            background: linear-gradient(135deg, #fff5f5 0%, #fffaf0 100%);
-            border-left: 4px solid #fc8181;
-            padding: 16px;
-            margin: 12px 0;
-            border-radius: 8px;
+        
+        .camera-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 15px;
         }
-        .alert-type {
-            font-weight: 700;
-            color: #2d3748;
-            margin-right: 12px;
+        
+        .camera-header h3 {
+            color: #333;
+            font-size: 18px;
         }
-        .alert-severity {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+        
+        .delete-btn {
+            background: #f56565;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: #e53e3e;
+            transform: scale(1.05);
+        }
+        
+        .camera-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .start-btn, .stop-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
             font-weight: 600;
-            margin-left: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .alert-severity.Critical { background: #fc8181; color: white; }
-        .alert-severity.High { background: #f6ad55; color: white; }
-        .alert-severity.Medium { background: #f6e05e; color: #2d3748; }
-        .alert-severity.Low { background: #68d391; color: white; }
-        .history-table {
+        
+        .start-btn {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .stop-btn {
+            background: #fc8181;
+            color: white;
+        }
+        
+        .start-btn:hover {
+            background: #38a169;
+        }
+        
+        .stop-btn:hover {
+            background: #f56565;
+        }
+        
+        /* Alert History Table */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filters input[type="date"] {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .export-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .export-btn:hover {
+            background: #5568d3;
+        }
+        
+        table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        .history-table th {
+        
+        table thead {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
+        }
+        
+        table th, table td {
             padding: 14px;
             text-align: left;
+        }
+        
+        table tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .severity-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 600;
         }
-        .history-table td {
-            padding: 14px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .history-table tr:hover { background: #f7fafc; }
-        .pagination-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-        }
-        .page-btn, .page-num {
-            padding: 10px 16px;
-            border: 2px solid #e2e8f0;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        .page-num.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-color: transparent;
-        }
-        .page-num:hover, .page-btn:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-        }
-        .emergency-btn {
-            padding: 20px;
-            font-size: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        .emergency-btn span { font-size: 32px; }
-        .live-badge {
+        
+        .severity-critical {
             background: #fc8181;
             color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 700;
         }
-        .camera-video {
-            background: #2d3748;
-            color: #a0aec0;
-            padding: 80px 20px;
-            text-align: center;
+        
+        .severity-high {
+            background: #f6ad55;
+            color: white;
+        }
+        
+        .severity-medium {
+            background: #f6e05e;
+            color: #333;
+        }
+        
+        .severity-low {
+            background: #68d391;
+            color: white;
+        }
+        
+        .status-active {
+            color: #48bb78;
+            font-weight: 600;
+        }
+        
+        .status-resolved {
+            color: #4299e1;
+            font-weight: 600;
+        }
+        
+        /* Profile Page */
+        #profile-section {
+            display: none;
+        }
+        
+        .profile-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .profile-content h3 {
+            color: #2d3748;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .profile-content input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
-            margin: 12px 0;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .save-profile-btn, .back-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+        
+        .save-profile-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .back-btn {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .save-profile-btn:hover, .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        /* Alert History Section */
+        #alert-history-section {
+            display: none;
         }
     </style>
-      <!-- Google Identity Services Library -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-  <header>Security Monitor Agent Dashboard</header>
-  <main>
-    <!-- Monitoring Zones Section -->
-    <section>
-      <h2>Monitoring Zones</h2>
-      <div class="zones-grid">
-        <div class="zone-card">
-          <div class="zone-title card-row">Zone 1</div>
-          <div class="card-row">Camera ID: CAM1001 <span class="status-badge on">Active</span></div>
-          <div class="card-row">Threats Detected: <strong>2</strong></div>
-          <div class="card-row">Last Scan: 20:02</div>
-          <div class="zone-actions card-row">
-            <button onclick="startMonitoring(this)">Start Monitoring</button>
-                    <button onclick="stopMonitoring(this)">Stop Monitoring</button>            <button>View Details</ onclick="viewDetails(this)"button>
-                    <button onclick="viewDetails(this)">View Details</button>                                <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
-                                          <button onclick="zoneSettings(this)">Settings</button>
-          </div>
-                              <!-- Camera Connection UI -->
-                    <div class="cam-connect-ui" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
-                        <h4 style="margin-bottom:12px;color:#333;">Connect CCTV Camera</h4>
-                        <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
-                            <option value="rtsp">RTSP (IP Camera/NVR)</option>
-                            <option value="mjpeg">MJPEG Stream</option>
-                            <option value="webrtc">WebRTC</option>
-                            <option value="hls">HLS (HTTP Live Streaming)</option>
-                            <option value="onvif">ONVIF Protocol</option>
-                            <option value="hikvision">Hikvision</option>
-                            <option value="dahua">Dahua</option>
-                            <option value="axis">Axis Camera</option>
-                        </select>
-                        <input type="text" class="cam-url" placeholder="Camera URL (e.g., rtsp://192.168.1.100:554/stream)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
-                        <input type="text" class="cam-username" placeholder="Username (if required)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
-                        <input type="password" class="cam-password" placeholder="Password (if required)" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
-                        <button onclick="connectCamera(this)" style="background:#28a745;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;margin-right:8px;">Connect</button>
-                        <button onclick="closeCameraConnect(this)" style="background:#dc3545;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
-                        <div class="cam-preview" style="margin-top:16px;display:none;">
-                            <h5 style="margin-bottom:8px;">Camera Preview:</h5>
-                            <img class="cam-stream" style="width:100%;border-radius:8px;border:2px solid #28a745;" />
+    <!-- Login Page -->
+    <div id="login-page">
+        <div class="login-container">
+            <h2>login</h2>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="username">
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="password">
+            </div>
+            <button class="login-btn" onclick="login()">Login</button>
+            <button class="google-btn" onclick="loginWithGoogle()">login with google</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="dashboard-wrapper">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h2>Settings</h2>
+                <nav>
+                    <a href="#" class="active" onclick="showSection('connected-cams')">Connect Cams</a>
+                    <a href="#" onclick="showSection('alert-history')">Alert History
+</a>
+                    <a href="#" onclick="toggleNotifications()">Notifications - Enable</a>
+                    <a href="#" onclick="toggleTheme()">Theme - Dark Mod</a>
+                    <a href="#" onclick="showScanInterval()">Scan Interval - 5 mins</a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="top-bar">
+                    <h1>Connected Cams</h1>
+                    <button class="profile-btn" onclick="showProfile()">profile</button>
+                </div>
+
+                <!-- Connected Cameras Section -->
+                <section id="connected-cams-section">
+                    <h2>Connected Cameras</h2>
+                    <div class="cameras-grid">
+                        <!-- Camera 1 -->
+                        <div class="camera-card">
+                            <div class="camera-header">
+                                <h3>cam 1</h3>
+                                <button class="delete-btn" onclick="deleteCamera(this)">delete</button>
+                            </div>
+                            <div class="camera-actions">
+                                <button class="start-btn" onclick="startMonitoring(this)">Start Monitoring</button>
+                                <button class="stop-btn" onclick="stopMonitoring(this)">Stop Monitoring</button>
+                            </div>
+                        </div>
+
+                        <!-- Camera 2 -->
+                        <div class="camera-card">
+                            <div class="camera-header">
+                                <h3>cam 2</h3>
+                                <button class="delete-btn" onclick="deleteCamera(this)">delete</button>
+                            </div>
+                            <div class="camera-actions">
+                                <button class="start-btn" onclick="startMonitoring(this)">Start Monitoring</button>
+                                <button class="stop-btn" onclick="stopMonitoring(this)">Stop Monitoring</button>
+                            </div>
                         </div>
                     </div>
-        </div>
-        <div class="zone-card">
-          <div class="zone-title card-row">Zone 2</div>
-          <div class="card-row">Camera ID: CAM1012 <span class="status-badge off">Paused</span></div>
-          <div class="card-row">Threats Detected: <strong>0</strong></div>
-          <div class="card-row">Last Scan: 19:55</div>
-          <div class="zone-actions card-row">
-            <button onclick="startMonitoring(this)">Start Monitoring</button>
-                    <button onclick="stopMonitoring(this)">Stop Monitoring</button>            <button>View Details</button>
-                    <button onclick="viewDetails(this)">View Details</button>                                <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
-                                <button onclick="zoneSettings(this)">Settings</button>
-          </div>
-                          <!-- Camera onclick="stopMonitoring(this)" Connection UI -->
-                <div class="cam-connect-ui" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
-                    <h4 style="margin-bottom:12px;color:#333;">Connect CCTV Camera</h4>
-                    <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
-                        <option value="rtsp">RTSP (IP Camera/NVR)</option>
-                        <option value="mjpeg">MJPEG Stream</option>
-                        <option value="webrtc">WebRTC</option>
-                        <option value="hls">HLS (HTTP Live Streaming)</option>
-                        <option value="onvif">ONVIF Protocol</option>
-                        <option value="hikvision">Hikvision</option>
-                        <option value="dahua"> onclick="stopMonitoring(this)"Dahua</option>
-                        <option value="axis"> onclick="viewDetails(this)"Axis Camera</option>
-                    </select>
-                    <input type onclick="zoneSettings(this)"="text" class="cam-url" placeholder="Camera URL (e.g., rtsp://192.168.1.100:554/stream)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
-                    <input type="text" class="cam-username" placeholder="Username (if required)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
-                    <input type="password" class="cam-password" placeholder="Password (if required)" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
-                    <button onclick="connectCamera(this)" style="background:#28a745;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;margin-right:8px;">Connect</button>
-                    <button onclick="closeCameraConnect(this)" style="background:#dc3545;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
-                    <div class="cam-preview" style="margin-top:16px;display:none;">
-                        <h5 style="margin-bottom:8px;">Camera Preview:</h5>
-                        <img class="cam-stream" style="width:100%;border-radius:8px;border:2px solid #28a745;" />
+                </section>
+
+                <!-- Alert History Section -->
+                <section id="alert-history-section">
+                    <h2>Alert History</h2>
+                    <div class="filters">
+                        <input type="date" id="start-date" placeholder="dd-mm-yyyy">
+                        <span>to</span>
+                        <input type="date" id="end-date" placeholder="dd-mm-yyyy">
+                        <button class="export-btn" onclick="exportHistory()">Export</button>
                     </div>
-                </div>
-        </div>
-        <div class="zone-card">
-          <div class="zone-title card-row">Zone 3</div>
-          <div class="card-row">Camera ID: CAM1018 <span class="status-badge on">Active</span></div>
-          <div class="card-row">Threats Detected: <strong>1</strong></div>
-          <div class="card-row">Last Scan: 20:00</div>
-          <div class="zone-actions card-row">
-            <button onclick="startMonitoring(this)">Start Monitoring</button>
-                    <button onclick="stopMonitoring(this)">Stop Monitoring</button>            <button>View Details</button>
-                    <button onclick="viewDetails(this)">View Details</button>                                <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
-                                <button onclick="zoneSettings(this)">Settings</button>
-          </div>
-                          <!-- Camera onclick="stopMonitoring(this)" Connection UI -->
-                <div class="cam-connect-ui" onclick="viewDetails(this)" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
-                    <h4 style="margin-bottom: onclick="zoneSettings(this)"12px;color:#333;">Connect CCTV Camera</h4>
-                    <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
-                        <option value="rtsp">RTSP (IP Camera/NVR)</option>
-                        <option value="mjpeg">MJPEG Stream</option>
-                        <option value="webrtc">WebRTC</option>
-                        <option value="hls">HLS (HTTP Live Streaming)</option>
-                        <option value="onvif">ONVIF Protocol</option>
-                        <option value="hikvision">Hikvision</option>
-                        <option value="dahua">Dahua</option>
-                        <option value="axis">Axis Camera</option>
-                    </select>
-                    <input type="text" class="cam-url" placeholder="Camera URL (e.g., rtsp://192.168.1.100:554/stream)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
-                    <input type="text" class="cam-username" placeholder="Username (if required)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
-                    <input type="password" class="cam-password" placeholder="Password (if required)" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
-                    <button onclick="connectCamera(this)" style="background:#28a745;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;margin-right:8px;">Connect</button>
-                    <button onclick="closeCameraConnect(this)" style="background:#dc3545;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
-                    <div class="cam-preview" style="margin-top:16px;display:none;">
-                        <h5 style="margin-bottom:8px;">Camera Preview:</h5>
-                        <img class="cam-stream" style="width:100%;border-radius:8px;border:2px solid #28a745;" />
-                    </div>
-                </div>
-        </div>
-        <div class="zone-card">
-          <div class="zone-title card-row">Zone 4</div>
-          <div class="card-row">Camera ID: CAM1024 <span class="status-badge off">Paused</span></div>
-          <div class="card-row">Threats Detected: <strong>5</strong></div>
-          <div class="card-row">Last Scan: 19:58</div>
-          <div class="zone-actions card-row">
-            <button onclick="startMonitoring(this)">Start Monitoring</button>
-                    <button onclick="stopMonitoring(this)">Stop Monitoring</button>            <button>View Details</button>
-                    <button onclick="viewDetails(this)">View Details</button>                                <button onclick="openCameraConnect(this)" style="background:#28a745;">Connect Camera</button>
-                                <button onclick="zoneSettings(this)">Settings</button>
-          </div>
-                          <!-- Camera onclick="stopMonitoring(this)" Connection UI -->
-                <div class="cam-connect-ui" onclick="viewDetails(this)" style="display:none;margin-top:16px;padding:16px;background:#f8f9fa;border-radius:8px;">
-                    <h4 style="margin-bottom: onclick="zoneSettings(this)"12px;color:#333;">Connect CCTV Camera</h4>
-                    <select class="cam-type" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
-                        <option value="rtsp">RTSP (IP Camera/NVR)</option>
-                        <option value="mjpeg">MJPEG Stream</option>
-                        <option value="webrtc">WebRTC</option>
-                        <option value="hls">HLS (HTTP Live Streaming)</option>
-                        <option value="onvif">ONVIF Protocol</option>
-                        <option value="hikvision">Hikvision</option>
-                        <option value="dahua">Dahua</option>
-                        <option value="axis">Axis Camera</option>
-                    </select>
-                    <input type="text" class="cam-url" placeholder="Camera URL (e.g., rtsp://192.168.1.100:554/stream)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
-                    <input type="text" class="cam-username" placeholder="Username (if required)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;">
-                    <input type="password" class="cam-password" placeholder="Password (if required)" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:6px;">
-                    <button onclick="connectCamera(this)" style="background:#28a745;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;margin-right:8px;">Connect</button>
-                    <button onclick="closeCameraConnect(this)" style="background:#dc3545;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
-                    <div class="cam-preview" style="margin-top:16px;display:none;">
-                        <h5 style="margin-bottom:8px;">Camera Preview:</h5>
-                        <img class="cam-stream" style="width:100%;border-radius:8px;border:2px solid #28a745;" />
-                    </div>
-                </div>
-        </div>
-      </div>
-    </section>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>SeverityZone</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>20:02</td>
+                                <td>Intrusion</td>
+                                <td><span class="severity-badge severity-critical">Critical</span></td>
+                                <td>Zone 1</td>
+                                <td class="status-active">Active</td>
+                                <td>
+                                    <button onclick="viewAlert(this)">View</button>
+                                    <button onclick="clearAlert(this)">Clear</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>20:01</td>
+                                <td>Object Left</td>
+                                <td><span class="severity-badge severity-high">High</span></td>
+                                <td>Zone 3</td>
+                                <td class="status-resolved">Resolved</td>
+                                <td>
+                                    <button onclick="viewAlert(this)">View</button>
+                                    <button onclick="clearAlert(this)">Clear</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>19:58</td>
+                                <td>Tampering</td>
+                                <td><span class="severity-badge severity-medium">Medium</span></td>
+                                <td>Zone 4</td>
+                                <td class="status-active">Active</td>
+                                <td>
+                                    <button onclick="viewAlert(this)">View</button>
+                                    <button onclick="clearAlert(this)">Clear</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>19:55</td>
+                                <td>Noise</td>
+                                <td><span class="severity-badge severity-low">Low</span></td>
+                                <td>Zone 2</td>
+                                <td class="status-active">Active</td>
+                                <td>
+                                    <button onclick="viewAlert(this)">View</button>
+                                    <button onclick="clearAlert(this)">Clear</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
 
-    <!-- Threat Alerts Section -->
-    <section>
-      <h2>Threat Alerts</h2>
-      <div class="filter-btns">
-        <button class="active onclick="filterAlerts(this)"">All</button>
-        <button>Critical</ onclick="filterAlerts(this)"button>
-        <button>High</ onclick="filterAlerts(this)"button>
-        <button>Medium</ onclick="filterAlerts(this)"button>
-        <button>Low</ onclick="filterAlerts(this)"button>
-      </div>
-      <div class="alerts-search">
-        <input type="text" placeholder="Search alerts...">
-      </div>
-      <div class="alerts-list">
-        <div class="alert-card">
-          <div class="alert-details">
-            <span class="alert-type">Intrusion</span>
-            <span class="alert-severity Critical">Critical</span>
-            <div class="alert-meta">20:02 | Zone 1</div>
-            <div>Description: Unrecognized person detected near gate.</div>
-          </div>
-          <div class="alert-actions">
-            <button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button>
-            <button onclick="investigateAlert(this)">Investigate</button>
-            <button onclick="reportAlert(this)">Report</button>
-          </div>
-        </div>
-        <div class="alert-card">
-          <div class="alert-details">
-            <span class="alert-type">Object Left Behind</span>
-            <span class="alert-severity High">High</span>
-            <div class="alert-meta">20:01 | Zone 3</div>
-            <div>Description: Suspicious package detected.</div>
-          </div>
-          <div class="alert-actions">
-            <button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button>
-            <button onclick="investigateAlert(this)">Investigate</button>
-            <button onclick="reportAlert(this)">Report</button>
-          </div>
-        </div>
-        <div class="alert-card">
-          <div class="alert-details">
-            <span class="alert-type">Tampering</span>
-            <span class="alert-severity Medium">Medium</span>
-            <div class="alert-meta">19:58 | Zone 4</div>
-            <div>Description: Camera view obstructed.</div>
-          </div>
-          <div class="alert-actions">
-            <button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button>
-            <button onclick="investigateAlert(this)">Investigate</button>
-            <button onclick="reportAlert(this)">Report</button>
-          </div>
-        </div>
-        <div class="alert-card">
-          <div class="alert-details">
-            <span class="alert-type">Noise</span>
-            <span class="alert-severity Low">Low</span>
-            <div class="alert-meta">19:55 | Zone 2</div>
-            <div>Description: Loud sound detected.</div>
-          </div>
-          <div class="alert-actions">
-            <button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button>
-            <button onclick="investigateAlert(this)">Investigate</button>
-            <button onclick="reportAlert(this)">Report</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Emergency Contacts Section -->
-    <section>
-      <h2>Emergency Contacts</h2>
-      <form class="contact-grid">
-        <div class="contact-row"><label for="police">Police</label><input type="tel" id="police" placeholder="Police Phone"><button class="test-btn" onclick="testCall(this)">Test Call</button></div>
-        <div class="contact-row"><label for="ambulance">Ambulance</label><input type="tel" id="ambulance" placeholder="Ambulance Phone"><button class="test-btn" onclick="testCall(this)">Test Call</button></div>
-        <div class="contact-row"><label for="fire">Fire</label><input type="tel" id="fire" placeholder="Fire Phone"><button class="test-btn" onclick="testCall(this)">Test Call</button></div>
-        <div class="contact-row"><label for="owner">Owner</label><input type="tel" id="owner" placeholder="Owner Phone"><button class="test-btn" onclick="testCall(this)">Test Call</button></div>
-        <button type="submit" class="save-btn">Save Contacts</button>
-      </form>
-      <div class="contact-update">Last Updated: 20:03</div>
-    </section>
-
-    <!-- Emergency Call Section -->
-    <section>
-      <h2>Emergency Call</h2>
-      <div class="emergency-call-grid">
-        <button class="emergency-btn"><span>🚔</span>Police</button>
-        <button class="emergency-btn"><span>🚑</span>Ambulance</button>
-        <button class="emergency-btn"><span>🔥</span>Fire</button>
-      </div>
-      <div class="call-status"> onclick="emergencyCall('Police')"Call Status: No active emergency call</div>
-      <div class="recent-calls"> onclick="emergencyCall('Ambulance')"
-        <strong>Recent Calls:</ onclick="emergencyCall('Fire')"strong>
-        <div class="recent-calls-list">
-          <div>19:59 - Ambulance</div>
-          <div>19:56 - Police</div>
-          <div>19:54 - Owner</div>
-        </div>
-      </div>
-      <input class="quick-notes" type="text" placeholder="Quick notes for emergency...">
-    </section>
-
-    <!-- Alert History Section -->
-    <section>
-      <h2>Alert History</h2>
-      <div class="date-filter">
-        <input type="date"> to <input type="date">
-        <button class="export-btn">Export</button>
-      </div>
-      <table class="history-table">
-        <thead>
-          <tr>
-            <th>Time</th><th>Type</th><th>Severity</th><th>Zone</th><th>Status</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>20:02</td><td>Intrusion</td><td>Critical</td><td>Zone 1</td><td>Active</td>
-            <td class="table-actions"><button>View</button><button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button></td>
-          </tr>
-          <tr>
-            <td>20:01</td><td>Object Left</td><td>High</td><td>Zone 3</td><td>Resolved</td>
-            <td class="table-actions"><button>View</button><button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button></td>
-          </tr>
-          <tr>
-            <td>19:58</td><td>Tampering</td><td>Medium</td><td>Zone 4</td><td>Active</td>
-            <td class="table-actions"><button>View</button><button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button></td>
-          </tr>
-          <tr>
-            <td>19:55</td><td>Noise</td><td>Low</td><td>Zone 2</td><td>Active</td>
-            <td class="table-actions"><button>View</button><button onc<button onclick="clearAlert(this)">Clear</button>lick="filterAlerts(this)">Critical</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <!-- Pagination Controls -->
-                  <!-- Pagination Controls -->
-            <div class="pagination-controls" style="margin-top:1rem; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="page-btn" style="padding:8px 12px; cursor:pointer;">&lt; Prev</button>
-                <button class="page-num active" style="padding:8px 12px; cursor:pointer; background:#0066cc; color:white; border:none; border-radius:4px;">1</button>
-                <button class="page-num" style="padding:8px 12px; cursor:pointer; background:#f0f0f0; border:1px solid #ccc; border-radius:4px;">2</button>
-                <button class="page-num" style="padding:8px 12px; cursor:pointer; background:#f0f0f0; border:1px solid #ccc; border-radius:4px;">3</button>
-                <button class="page-num" style="padding:8px 12px; cursor:pointer; background:#f0f0f0; border:1px solid #ccc; border-radius:4px;">4</button>
-                <button class="page-num" style="padding:8px 12px; cursor:pointer; background:#f0f0f0; border:1px solid #ccc; border-radius:4px;">5</button>
-                <button class="page-btn" style="padding:8px 12px; cursor:pointer;">Next &gt;</button>
-            </div></div>
-    </section>
-
-    <!-- Camera Feeds Section -->
-    <section>
-      <h2>Camera Feeds</h2>
-      <div class="camera-grid">
-        <div class="camera-card">
-          <div class="camera-live">Cam 1 <span class="live-badge">LIVE</span></div>
-          <div class="camera-video">Video Stream</div>
-          <div class="camera-controls">
-            <button onclick="takeSnapshot(this)">Snapshot</button>
-            <button onclick="recordVideo(this)">Record</button>
-            <button onclick="fullscreenVideo(this)">Fullscreen</button>
-          </div>
-        </div>
-        <div class="camera-card">
-          <div class="camera-live">Cam 2 <span class="live-badge">LIVE</span></div>
-          <div class="camera-video">Video Stream</div>
-          <div class="camera-controls">
-            <button onclick="takeSnapshot(this)">Snapshot</button>
-            <button onclick="recordVideo(this)">Record</button>
-            <button onclick="fullscreenVideo(this)">Fullscreen</button>
-          </div>
-        </div>
-        <div class="camera-card">
-          <div class="camera-live">Cam 3 <span class="live-badge">LIVE</span></div>
-          <div class="camera-video">Video Stream</div>
-          <div class="camera-controls">
-            <button onclick="takeSnapshot(this)">Snapshot</button>
-            <button onclick="recordVideo(this)">Record</button>
-            <button onclick="fullscreenVideo(this)">Fullscreen</button>
-          </div>
-        </div>
-        <div class="camera-card">
-          <div class="camera-live">Cam 4 <span class="live-badge">LIVE</span></div>
-          <div class="camera-video">Video Stream</div>
-          <div class="camera-controls">
-            <button onclick="takeSnapshot(this)">Snapshot</button>
-            <button onclick="recordVideo(this)">Record</button>
-            <button onclick="fullscreenVideo(this)">Fullscreen</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Settings Section -->
-    <section>
-      <h2>Settings</h2>
-      <div class="settings-row">
-        <span class="settings-label">Theme</span>
-        <input type="checkbox" class="theme-toggle"> Dark Mode
-      </div>
-      <div class="settings-row">
-        <span class="settings-label">Notifications</span>
-        <input type="checkbox" class="notif-toggle"> Enable
-      </div>
-      <div class="settings-row">
-        <span class="settings-label">Scan Interval</span>
-        <input type="range" min="1" max="30" value="5" class="scan-slider">
-        <span>mins</span>
-      </div>
-      <div class="settings-row">
-        <span class="settings-label">Auto-response</span>
-        <input type="checkbox" class="auto-response-toggle"> Enable
-      </div>
-      <button class="save-settings-btn">Save Settings</button>
-    </section>
-
-    </div> <!-- End main-content -->
-    </main>
-
-      <!-- Profile Details Section -->
-          <section id="profile-section" style="display:none;">
+                <!-- Profile Section -->
+                <section id="profile-section">
                     <h2>Profile Details</h2>
-                            <div style="background:white;padding:30px;border-radius:12px;max-width:600px;margin:0 auto;">
-                                          <h3>User Information</h3>
-                                                      <p><strong>Name:</strong> <input type="text" id="profile-name" value="Admin User" style="padding:8px;border:1px solid #ddd;border-radius:4px;width:300px;"></p>
-                                                                  <p><strong>Email:</strong> <input type="email" id="profile-email" value="admin@security.com" style="padding:8px;border:1px solid #ddd;border-radius:4px;width:300px;"></p>
-                                                                              <h3 style="margin-top:30px;">Emergency Contacts</h3>
-                                                                                          <p><strong>Police:</strong> <input type="tel" id="profile-police" value="100" style="padding:8px;border:1px solid #ddd;border-radius:4px;width:200px;"></p>
-                                                                                                      <br><br>
-                                                                                                                  <button onclick="saveProfile()" style="margin-right:10px;">Save Profile</button>
-                                                                                                                              <button onclick="showSection('dashboard')">Back to Dashboard</button>
-                                                                                                                                      </div>
-                                                                                                                                          </section></div>
+                    <div class="profile-content">
+                        <h3>Profile Details</h3>
+                        <input type="text" placeholder="Name" value="Admin User">
+                        <input type="email" placeholder="Email" value="admin@security.com">
+                        
+                        <h3>Emergency Contacts</h3>
+                        <input type="tel" placeholder="Emergency Contact 1">
+                        <input type="tel" placeholder="Emergency Contact 2">
+                        
+                        <button class="save-profile-btn" onclick="saveProfile()">Save Profile</button>
+                        <button class="back-btn" onclick="showSection('connected-cams')">Back to Dashboard</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Login function
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username && password) {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+            } else {
+                alert('Please enter both username and password');
+            }
+        }
+
+        // Google Login
+        function loginWithGoogle() {
+            google.accounts.id.initialize({
+                client_id: '663908154600-ona5houul2fjs5lp0gqpm7ovehdmuvbp.apps.googleusercontent.com',
+                callback: handleGoogleLogin
+            });
+            google.accounts.id.prompt();
+        }
+
+        function handleGoogleLogin(response) {
+            console.log('Google login successful:', response);
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+        }
+
+        // Show section
+        function showSection(section) {
+            document.getElementById('connected-cams-section').style.display = 'none';
+            document.getElementById('alert-history-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'none';
+            
+            if (section === 'connected-cams') {
+                document.getElementById('connected-cams-section').style.display = 'block';
+                document.querySelector('.top-bar h1').textContent = 'Connected Cams';
+            } else if (section === 'alert-history') {
+                document.getElementById('alert-history-section').style.display = 'block';
+                document.querySelector('.top-bar h1').textContent = 'Alert History';
+            }
+            
+            // Update active sidebar link
+            document.querySelectorAll('.sidebar nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Show profile
+        function showProfile() {
+            document.getElementById('connected-cams-section').style.display = 'none';
+            document.getElementById('alert-history-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'block';
+            document.querySelector('.top-bar h1').textContent = 'Profile';
+        }
+
+        // Camera functions
+        function startMonitoring(btn) {
+            alert('Monitoring started!');
+        }
+
+        function stopMonitoring(btn) {
+            alert('Monitoring stopped!');
+        }
+
+        function deleteCamera(btn) {
+            if (confirm('Are you sure you want to delete this camera?')) {
+                btn.closest('.camera-card').remove();
+            }
+        }
+
+        // Alert functions
+        function viewAlert(btn) {
+            alert('Viewing alert details...');
+        }
+
+        function clearAlert(btn) {
+            if (confirm('Clear this alert?')) {
+                btn.closest('tr').style.opacity = '0.5';
+            }
+        }
+
+        function exportHistory() {
+            alert('Exporting alert history...');
+        }
+
+        // Settings functions
+        function toggleNotifications() {
+            alert('Notifications toggled!');
+        }
+
+        function toggleTheme() {
+            alert('Theme toggled!');
+        }
+
+        function showScanInterval() {
+            alert('Scan interval settings...');
+        }
+
+        // Profile function
+        function saveProfile() {
+            alert('Profile saved successfully!');
+        }
+    </script>
 </body>
 </html>
