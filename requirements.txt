@@ -4,3 +4,10 @@ black
 openai
 langchain
 python-dotenv
+requests
+beautifulsoup4
+pandas
+numpy
+anthropic
+fastapi
+uvicorn
