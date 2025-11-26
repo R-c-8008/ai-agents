@@ -234,6 +234,57 @@
             background: #e53e3e;
             transform: scale(1.05);
         }
+
+                /* Connect New Cam Button */
+                .connect-new-cam-btn {
+                                background: linear-gradient(135deg, #667eea, #764ba2);
+                                color: white;
+                                padding: 12px 24px;
+                                border: none;
+                                border-radius: 8px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                margin-bottom: 20px;
+                                transition: all 0.3s;
+                            }
+
+                .connect-new-cam-btn:hover {
+                                transform: translateY(-2px);
+                                box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+                            }
+
+                /* Connect Menu */
+                .connect-menu {
+                                display: none;
+                                background: white;
+                                border: 2px solid #667eea;
+                                border-radius: 8px;
+                                padding: 10px;
+                                margin-bottom: 20px;
+                                gap: 10px;
+                                flex-direction: column;
+                            }
+
+                .connect-menu.show {
+                                display: flex;
+                            }
+
+                .connect-option {
+                                background: #f8f9fa;
+                                color: #333;
+                                padding: 10px 20px;
+                                border: 2px solid #e0e0e0;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                transition: all 0.3s;
+                                font-weight: 500;
+                            }
+
+                .connect-option:hover {
+                                background: #667eea;
+                                color: white;
+                                border-color: #667eea;
+                            }
         
         .camera-actions {
             display: flex;
@@ -457,6 +508,12 @@
                 <!-- Connected Cameras Section -->
                 <section id="connected-cams-section">
                     <h2>Connected Cameras</h2>
+                                    <button class="connect-new-cam-btn" onclick="toggleConnectMenu()">connect new cam</button>
+                                    <div class="connect-menu" id="connect-menu">
+                                                            <button class="connect-option" onclick="connectWithWiFi()">With WiFi</button>
+                                                            <button class="connect-option" onclick="connectWithBluetooth()">With Bluetooth</button>
+                                                            <button class="connect-option" onclick="connectWithApp()">Connect with Cam App</button>
+                                                        </div>
                     <div class="cameras-grid">
                         <!-- Camera 1 -->
                         <div class="camera-card">
@@ -677,6 +734,27 @@
         function saveProfile() {
             alert('Profile saved successfully!');
         }
+
+                // Connect New Cam functions
+                function toggleConnectMenu() {
+                                const menu = document.getElementById('connect-menu');
+                                menu.classList.toggle('show');
+                            }
+
+                function connectWithWiFi() {
+                                alert('Connecting camera with WiFi...');
+                                // Add your WiFi connection logic here
+                            }
+
+                function connectWithBluetooth() {
+                                alert('Connecting camera with Bluetooth...');
+                                // Add your Bluetooth connection logic here
+                            }
+
+                function connectWithApp() {
+                                alert('Opening Cam App connection...');
+                                // Add your Cam App connection logic here
+                            }
     </script>
 </body>
 </html>
